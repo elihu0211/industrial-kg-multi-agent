@@ -51,7 +51,7 @@ def generate_a2ui(runtime: ToolRuntime[Any]) -> str:
     import time
 
     t0 = time.time()
-    print(f"[A2UI-DEBUG] generate_a2ui STARTED at t=0")
+    print("[A2UI-DEBUG] generate_a2ui STARTED at t=0")
 
     messages = runtime.state["messages"][:-1]
     print(f"[A2UI-DEBUG]   messages count: {len(messages)}")
@@ -83,7 +83,7 @@ def generate_a2ui(runtime: ToolRuntime[Any]) -> str:
     print(f"[A2UI-DEBUG]   secondary LLM responded at t={time.time() - t0:.1f}s")
 
     if not response.tool_calls:
-        print(f"[A2UI-DEBUG]   ERROR: no tool calls in response")
+        print("[A2UI-DEBUG]   ERROR: no tool calls in response")
         return json.dumps({"error": "LLM did not call render_a2ui"})
 
     tool_call = response.tool_calls[0]
