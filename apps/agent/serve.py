@@ -16,6 +16,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langgraph.checkpoint.memory import MemorySaver
 
+from src.config import settings
+
 # Import the original graph from the unmodified agent code
 from main import graph
 
@@ -56,5 +58,4 @@ add_langgraph_fastapi_endpoint(
 )
 
 if __name__ == "__main__":
-    port = int(os.getenv("AGENT_PORT", "8123"))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    uvicorn.run(app, host="0.0.0.0", port=settings.agent_port)
