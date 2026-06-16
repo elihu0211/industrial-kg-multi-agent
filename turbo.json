@@ -1,0 +1,30 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "globalDependencies": ["pnpm-lock.yaml", ".env"],
+  "globalEnv": [
+    "OPENAI_API_KEY",
+    "ANTHROPIC_API_KEY",
+    "AGENT_URL",
+    "LANGGRAPH_DEPLOYMENT_URL",
+    "LANGSMITH_API_KEY",
+    "COPILOTKIT_LICENSE_TOKEN",
+    "INTELLIGENCE_API_KEY",
+    "INTELLIGENCE_API_URL",
+    "INTELLIGENCE_GATEWAY_WS_URL",
+    "MCP_SERVER_URL"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "industrial-kg-multi-agent",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.34.3",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "concurrently \"pnpm dev:web\" \"pnpm dev:agent\" --names web,agent --prefix-colors blue,green --kill-others",
+    "dev:debug": "LOG_LEVEL=debug pnpm dev",
+    "dev:web": "turbo run dev --filter=@ikg/web",
+    "dev:agent": "./scripts/run-agent.sh || scripts\\run-agent.bat",
+    "build": "turbo run build",
+    "start": "turbo run start --filter=@ikg/web",
+    "setup:agent": "./scripts/setup-agent.sh || scripts\\setup-agent.bat",
+    "postinstall": "pnpm setup:agent"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "turbo": "^2.5.0"
+  }
+}

@@ -1,0 +1,6 @@
+# Virtual uv workspace root (no [project] — the root ships no Python code).
+# The single uv.lock here locks every member's dependencies together.
+# Add future Python packages (shared libs, eval harness) under apps/ or
+# packages/ and list them as members.
+[tool.uv.workspace]
+members = ["apps/agent"]

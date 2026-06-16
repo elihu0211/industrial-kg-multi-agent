@@ -1,0 +1,23 @@
+# Dockerfile for the Python LangGraph agent (uv workspace).
+# Build context = repo root, because the single uv.lock lives at the workspace
+# root (apps/agent is a workspace member, not a standalone project).
+FROM python:3.14-slim
+
+# Install uv by copying from the official image (avoids curl|sh pipe-swallow bug
+# where a 5xx on astral.sh silently produces an exit-0 layer with no uv binary).
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+
+WORKDIR /app
+
+# Workspace root manifests + lockfile first for a cached install layer.
+COPY pyproject.toml uv.lock .python-version ./
+COPY apps/agent/ ./apps/agent/
+
+# Sync just the agent member against the shared lockfile (.venv at /app/.venv).
+RUN uv sync --package sample-agent
+
+EXPOSE 8123
+
+# langgraph.json lives in apps/agent; uv run there resolves the workspace .venv.
+WORKDIR /app/apps/agent
+CMD ["uv", "run", "langgraph", "dev", "--host", "0.0.0.0", "--port", "8123", "--no-browser"]

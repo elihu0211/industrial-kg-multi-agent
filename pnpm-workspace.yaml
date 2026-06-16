@@ -1,0 +1,4 @@
+# JS/TS workspace members. The Python agent (apps/agent) is managed by uv,
+# not pnpm, so it is intentionally NOT listed here.
+packages:
+  - "apps/web"
