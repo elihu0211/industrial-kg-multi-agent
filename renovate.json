@@ -1,0 +1,85 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+
+  "packageRules": [
+    {
+      "description": "CopilotKit — JS + Python together",
+      "matchPackageNames": [
+        "@copilotkit/**",
+        "copilotkit",
+        "ag-ui-protocol",
+        "ag-ui-langgraph",
+        "@ag-ui/**"
+      ],
+      "groupName": "CopilotKit / AG-UI",
+      "automerge": false
+    },
+    {
+      "description": "LangChain ecosystem — langgraph, langchain, langsmith",
+      "matchPackageNames": ["langgraph*", "langchain*", "langsmith*"],
+      "groupName": "LangChain ecosystem",
+      "automerge": false
+    },
+    {
+      "description": "Next.js framework",
+      "matchPackageNames": ["next"],
+      "groupName": "Next.js",
+      "automerge": false
+    },
+    {
+      "description": "React + React DOM — keep in sync",
+      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
+      "groupName": "React",
+      "automerge": false
+    },
+    {
+      "description": "Dev toolchain — automerge minor/patch",
+      "matchPackageNames": [
+        "typescript",
+        "turbo",
+        "concurrently",
+        "@tailwindcss/**",
+        "tailwindcss",
+        "@types/node"
+      ],
+      "groupName": "Dev toolchain",
+      "automerge": true,
+      "automergeType": "pr",
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "description": "Python runtime tools — uv, Python base image",
+      "matchPackageNames": ["uv", "ghcr.io/astral-sh/uv"],
+      "groupName": "uv",
+      "automerge": true,
+      "automergeType": "pr",
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "description": "Docker base images",
+      "matchManagers": ["dockerfile"],
+      "groupName": "Docker base images",
+      "automerge": false
+    }
+  ],
+
+  "uv": {
+    "enabled": true,
+    "fileMatch": ["(^|/)pyproject\\.toml$"]
+  },
+
+  "npm": {
+    "enabled": true
+  },
+
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/.venv/**",
+    "**/dist/**",
+    "**/.next/**"
+  ]
+}

@@ -216,3 +216,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ── Node / pnpm / Next.js / Turborepo (apps/web) ──
+node_modules/
+.pnpm-store/
+.next/
+out/
+.turbo/
+next-env.d.ts
+*.tsbuildinfo
+.DS_Store
+npm-debug.log*
+pnpm-debug.log*
