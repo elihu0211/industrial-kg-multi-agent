@@ -3,6 +3,7 @@ This is the main entry point for the agent.
 It defines the workflow graph, state, tools, nodes and edges.
 """
 
+import os
 from pathlib import Path
 
 from copilotkit import CopilotKitMiddleware, StateStreamingMiddleware, StateItem
@@ -24,7 +25,10 @@ _env = Environment(
     autoescape=select_autoescape([]),
 )
 
-model = ChatOpenAI(model="gpt-5.4-mini", model_kwargs={"parallel_tool_calls": False})
+model = ChatOpenAI(
+    model=os.environ.get("LLM_MODEL", "gpt-5.4-mini"),
+    model_kwargs={"parallel_tool_calls": False},
+)
 
 agent = create_agent(
     model=model,
