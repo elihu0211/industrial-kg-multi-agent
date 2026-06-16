@@ -19,12 +19,16 @@ from src.a2ui_fixed_schema import search_flights
 
 from langchain_openai import ChatOpenAI
 
+from src.config import settings
+
 _env = Environment(
     loader=FileSystemLoader(str(Path(__file__).parent / "src" / "prompts")),
     autoescape=select_autoescape([]),
 )
 
-model = ChatOpenAI(model="gpt-5.4-mini", model_kwargs={"parallel_tool_calls": False})
+model = ChatOpenAI(
+    model=settings.llm_model, model_kwargs={"parallel_tool_calls": False}
+)
 
 agent = create_agent(
     model=model,

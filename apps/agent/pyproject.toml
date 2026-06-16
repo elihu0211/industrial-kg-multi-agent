@@ -10,7 +10,7 @@ dependencies = [
   "openai==1.109.1",
   "fastapi>=0.115.5,<1.0.0",
   "uvicorn>=0.29.0,<1.0.0",
-  "python-dotenv>=1.0.0,<2.0.0",
+  "pydantic-settings>=2.7,<3",
   "langchain-openai==1.1.9",
   "copilotkit==0.1.94",
   "jinja2>=3.1",
