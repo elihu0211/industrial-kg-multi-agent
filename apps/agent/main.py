@@ -3,7 +3,10 @@ This is the main entry point for the agent.
 It defines the workflow graph, state, tools, nodes and edges.
 """
 
+from pathlib import Path
+
 from copilotkit import CopilotKitMiddleware, StateStreamingMiddleware, StateItem
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 from langchain.agents import create_agent
 
 # Data & state tools
@@ -15,6 +18,11 @@ from src.a2ui_dynamic_schema import generate_a2ui
 from src.a2ui_fixed_schema import search_flights
 
 from langchain_openai import ChatOpenAI
+
+_env = Environment(
+    loader=FileSystemLoader(str(Path(__file__).parent / "src" / "prompts")),
+    autoescape=select_autoescape([]),
+)
 
 model = ChatOpenAI(model="gpt-5.4-mini", model_kwargs={"parallel_tool_calls": False})
 
@@ -28,18 +36,7 @@ agent = create_agent(
         ),
     ],
     state_schema=AgentState,
-    system_prompt="""
-        You are a polished, professional demo assistant. Keep responses to 1-2 sentences.
-
-        Tool guidance:
-        - Flights: call search_flights to show flight cards with a pre-built schema.
-        - Dashboards & rich UI: call generate_a2ui to create dashboard UIs with metrics,
-          charts, tables, and cards. It handles rendering automatically.
-        - Charts: call query_data first, then render with the chart component.
-        - Todos: enable app mode first, then manage todos.
-        - A2UI actions: when you see a log_a2ui_event result (e.g. "view_details"),
-          respond with a brief confirmation. The UI already updated on the frontend.
-    """,
+    system_prompt=_env.get_template("system.j2").render(),
 )
 
 graph = agent
