@@ -1,11 +1,10 @@
 import {
   CopilotRuntime,
   CopilotKitIntelligence,
-  createCopilotEndpoint,
+  createCopilotHonoHandler,
   InMemoryAgentRunner,
 } from "@copilotkit/runtime/v2";
 import { LangGraphAgent } from "@copilotkit/runtime/langgraph";
-import { handle } from "hono/vercel";
 
 const defaultAgent = new LangGraphAgent({
   deploymentUrl:
@@ -49,12 +48,12 @@ const runtime = new CopilotRuntime({
   },
 });
 
-const app = createCopilotEndpoint({
+const app = createCopilotHonoHandler({
   runtime,
   basePath: "/api/copilotkit",
 });
 
-export const GET = handle(app);
-export const POST = handle(app);
-export const PATCH = handle(app);
-export const DELETE = handle(app);
+export const GET = app.fetch;
+export const POST = app.fetch;
+export const PATCH = app.fetch;
+export const DELETE = app.fetch;
