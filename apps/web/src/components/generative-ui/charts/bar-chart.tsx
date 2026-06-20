@@ -142,9 +142,9 @@ export function BarChart({ title, description, data }: BarChartProps) {
                 <AnimatedBar {...props} isNew={isNew(props.index as number)} />
               )}
             >
-              {data.map((_, index) => (
+              {data.map((entry, index) => (
                 <Cell
-                  key={index}
+                  key={entry.label}
                   fill={CHART_COLORS[index % CHART_COLORS.length]}
                 />
               ))}

@@ -28,10 +28,13 @@ export const HeadlessChat = () => {
       ))}
       <input
         type="text"
+        aria-label="Message"
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />
-      <button onClick={() => sendMessage(message)}>Send</button>
+      <button type="button" onClick={() => sendMessage(message)}>
+        Send
+      </button>
     </div>
   );
 };

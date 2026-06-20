@@ -57,6 +57,7 @@ function ActionButton({
   const [done, setDone] = useState(false);
   return (
     <button
+      type="button"
       disabled={done}
       style={{
         width: "100%",
@@ -68,7 +69,7 @@ function ActionButton({
         fontSize: "0.85rem",
         fontWeight: 500,
         cursor: done ? "default" : "pointer",
-        transition: "all 0.2s ease",
+        transition: "background 0.2s ease, border-color 0.2s ease, color 0.2s ease",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -365,7 +366,7 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
             display: "inline-block",
             padding: "2px 8px",
             borderRadius: "9999px",
-            fontSize: "0.7rem",
+            fontSize: "0.75rem",
             fontWeight: 500,
             background: v.bg,
             color: v.color,
@@ -399,7 +400,7 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
                       borderBottom: `2px solid ${c.border}`,
                       color: c.muted,
                       fontWeight: 600,
-                      fontSize: "0.7rem",
+                      fontSize: "0.75rem",
                       textTransform: "uppercase",
                       letterSpacing: "0.05em",
                     }}
