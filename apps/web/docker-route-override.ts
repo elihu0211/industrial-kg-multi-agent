@@ -7,10 +7,9 @@
 import {
   CopilotRuntime,
   InMemoryAgentRunner,
-  createCopilotEndpoint,
+  createCopilotRuntimeHandler,
 } from "@copilotkit/runtime/v2";
 import { HttpAgent } from "@ag-ui/client";
-import { handle } from "hono/vercel";
 
 const agentUrl = process.env.AGENT_URL || "http://localhost:8123";
 
@@ -23,10 +22,11 @@ const runtime = new CopilotRuntime({
   runner: new InMemoryAgentRunner(),
 });
 
-const app = createCopilotEndpoint({
+// Native fetch handler (SSE-based AG-UI protocol). No Hono adapter.
+const handler = createCopilotRuntimeHandler({
   runtime,
   basePath: "/api/copilotkit",
 });
 
-export const GET = handle(app);
-export const POST = handle(app);
+export const GET = handler;
+export const POST = handler;
