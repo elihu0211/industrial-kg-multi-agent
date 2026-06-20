@@ -94,9 +94,7 @@ pnpm dev
 │           ├── a2ui_dynamic_schema.py
 │           └── a2ui_fixed_schema.py
 ├── scripts/                     # setup-agent / run-agent（.sh + .bat）
-├── docker/                      # Dockerfile.app + Dockerfile.agent
 ├── Dockerfile                   # 單一映像部署（web + agent）
-├── docker-compose.test.yml      # e2e 煙霧測試
 ├── pnpm-workspace.yaml
 ├── pyproject.toml               # uv workspace root
 ├── uv.lock
