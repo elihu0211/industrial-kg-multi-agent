@@ -19,6 +19,13 @@ import {
 import { MeetingTimePicker } from "@/components/generative-ui/meeting-time-picker";
 import { ToolReasoning } from "@/components/tool-rendering";
 
+// Rendered by A2UI / internal trackers — never shown as a tool card
+const IGNORED_TOOLS = [
+  "render_a2ui", // Rendered by A2UI streaming, not as a tool card
+  "generate_a2ui", // Legacy: rendered by A2UI, not as a tool card
+  "log_a2ui_event", // Internal A2UI event tracker
+];
+
 export const useGenerativeUIExamples = () => {
   const { theme, setTheme } = useTheme();
 
@@ -55,14 +62,9 @@ export const useGenerativeUIExamples = () => {
   });
 
   // Default Tool Rendering (backend tool UI)
-  const ignoredTools = [
-    "render_a2ui", // Rendered by A2UI streaming, not as a tool card
-    "generate_a2ui", // Legacy: rendered by A2UI, not as a tool card
-    "log_a2ui_event", // Internal A2UI event tracker
-  ];
   useDefaultRenderTool({
     render: ({ name, status, parameters }) => {
-      if (ignoredTools.includes(name)) return <></>;
+      if (IGNORED_TOOLS.includes(name)) return <></>;
       return <ToolReasoning name={name} status={status} args={parameters} />;
     },
   });

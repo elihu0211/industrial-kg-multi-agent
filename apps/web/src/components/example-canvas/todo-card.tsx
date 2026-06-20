@@ -98,6 +98,7 @@ export function TodoCard({
       {/* Emoji avatar */}
       <div className="relative inline-block mb-3">
         <button
+          type="button"
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}
           className={cn(
             "block text-3xl leading-none cursor-pointer rounded-xl p-2 transition-colors",
@@ -112,6 +113,7 @@ export function TodoCard({
           <div className="absolute top-0 left-full ml-2 z-10 flex gap-1 p-1.5 rounded-full bg-[var(--card)] border border-[var(--border)] shadow-lg">
             {EMOJI_OPTIONS.map((emoji) => (
               <button
+                type="button"
                 key={emoji}
                 onClick={() => {
                   onUpdateEmoji(todo.id, emoji);
@@ -150,17 +152,18 @@ export function TodoCard({
               aria-label="Edit todo title"
             />
           ) : (
-            <div
+            <button
+              type="button"
               onClick={() => startEdit("title")}
               className={cn(
-                "text-base font-semibold cursor-text break-words leading-snug",
+                "block w-full text-left text-base font-semibold cursor-text break-words leading-snug",
                 isCompleted
                   ? "text-[var(--muted-foreground)] line-through"
                   : "text-[var(--foreground)]",
               )}
             >
               {todo.title}
-            </div>
+            </button>
           )}
 
           {editingField === "description" ? (
@@ -178,17 +181,18 @@ export function TodoCard({
               aria-label="Edit todo description"
             />
           ) : (
-            <p
+            <button
+              type="button"
               onClick={() => startEdit("description")}
               className={cn(
-                "mt-1.5 text-sm leading-relaxed cursor-text",
+                "block w-full text-left mt-1.5 text-sm leading-relaxed cursor-text",
                 isCompleted
                   ? "text-[var(--muted-foreground)] line-through"
                   : "text-[var(--muted-foreground)]",
               )}
             >
               {truncatedDescription}
-            </p>
+            </button>
           )}
         </div>
       </div>

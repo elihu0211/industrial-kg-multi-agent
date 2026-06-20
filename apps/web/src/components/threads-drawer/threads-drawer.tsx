@@ -32,13 +32,15 @@ const TITLE_ANIMATION_MS = 360;
 const UNTITLED_THREAD_LABEL = "New thread";
 const RUNTIME_BASE_PATH = "/api/copilotkit";
 
+const THREAD_TIMESTAMP_FORMAT = new Intl.DateTimeFormat("en-US", {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
+
 function formatThreadTimestamp(updatedAt: string): string {
   const timestamp = new Date(updatedAt);
   if (Number.isNaN(timestamp.getTime())) return "Updated recently";
-  return new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(timestamp);
+  return THREAD_TIMESTAMP_FORMAT.format(timestamp);
 }
 
 function cx(...classNames: Array<string | false | undefined>): string {

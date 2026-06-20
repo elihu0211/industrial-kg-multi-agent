@@ -126,7 +126,7 @@ export function PieChart({ title, description, data }: PieChartProps) {
             const pct = total > 0 ? ((val / total) * 100).toFixed(0) : 0;
             return (
               <div
-                key={index}
+                key={item.label}
                 className="flex items-center gap-3 text-sm transition-opacity duration-300 ease-out"
                 style={{ opacity: 1 }}
               >
