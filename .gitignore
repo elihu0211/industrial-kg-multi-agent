@@ -228,6 +228,3 @@ next-env.d.ts
 .DS_Store
 npm-debug.log*
 pnpm-debug.log*
-
-# ── Claude Code local agent tooling ──
-.claude/
