@@ -28,9 +28,9 @@ export const useExampleSuggestions = () => {
           "Show me a bar chart of our expenses by category. Use the query_data tool to fetch the data first, then render it with the barChart component.",
       },
       {
-        title: "Schedule Meeting (Human In The Loop)",
+        title: "Schedule Meeting (Durable Interrupt HITL)",
         message:
-          "I'd like to schedule a 30-minute meeting to learn about CopilotKit. Please use the scheduleTime tool to let me pick a time.",
+          "I'd like to schedule a 30-minute meeting to learn about CopilotKit. Please use the schedule_time tool to let me pick a time.",
       },
       {
         title: "Search Flights (A2UI Fixed Schema)",

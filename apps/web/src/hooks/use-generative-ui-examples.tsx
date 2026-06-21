@@ -4,7 +4,7 @@ import { useTheme } from "@/hooks/use-theme";
 import {
   useComponent,
   useFrontendTool,
-  useHumanInTheLoop,
+  useInterrupt,
   useDefaultRenderTool,
 } from "@copilotkit/react-core/v2";
 
@@ -29,21 +29,22 @@ const IGNORED_TOOLS = [
 export const useGenerativeUIExamples = () => {
   const { theme, setTheme } = useTheme();
 
-  // Human-in-the-Loop (frontend tool requiring user decision)
-  useHumanInTheLoop({
-    name: "scheduleTime",
-    description: "Use human-in-the-loop to schedule a meeting with the user.",
-    parameters: z.object({
-      reasonForScheduling: z
-        .string()
-        .describe("Reason for scheduling, very brief - 5 words."),
-      meetingDuration: z
-        .number()
-        .describe("Duration of the meeting in minutes"),
-    }),
-    render: ({ respond, status, args }) => {
-      return <MeetingTimePicker status={status} respond={respond} {...args} />;
-    },
+  // Durable Human-in-the-Loop: the backend `schedule_time` tool calls LangGraph
+  // interrupt(), which surfaces here as an AG-UI on_interrupt event. The run is
+  // paused at a checkpoint (survives restart/reconnect) until resolve() resumes
+  // it — unlike the frontend-tool HITL, which hangs if the tab closes mid-run.
+  useInterrupt({
+    enabled: (event) => event.value?.kind === "scheduleTime",
+    render: ({ event, resolve }) => (
+      // interrupt render has no `status` — it only fires while awaiting input,
+      // so the picker is always in its "executing" (selectable) state.
+      <MeetingTimePicker
+        status="executing"
+        respond={resolve}
+        reasonForScheduling={event.value?.reasonForScheduling}
+        meetingDuration={event.value?.meetingDuration}
+      />
+    ),
   });
 
   // Controlled Generative UI (frontend-defined chart components)
