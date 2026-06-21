@@ -17,6 +17,9 @@ from src.todos import AgentState, todo_tools
 from src.a2ui_dynamic_schema import generate_a2ui
 from src.a2ui_fixed_schema import search_flights
 
+# Durable human-in-the-loop (LangGraph interrupt())
+from src.scheduling import schedule_time
+
 from langchain_openai import ChatOpenAI
 
 from src.config import settings
@@ -32,7 +35,7 @@ model = ChatOpenAI(
 
 agent = create_agent(
     model=model,
-    tools=[query_data, *todo_tools, generate_a2ui, search_flights],
+    tools=[query_data, *todo_tools, generate_a2ui, search_flights, schedule_time],
     middleware=[
         CopilotKitMiddleware(),
         StateStreamingMiddleware(
