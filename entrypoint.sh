@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "[entrypoint] Starting: langgraph-python starter"
+echo "[entrypoint] Starting: .NET (Microsoft Agent Framework) + Next.js"
 
 if [ -z "$OPENAI_API_KEY" ]; then
   echo "[entrypoint] WARNING: OPENAI_API_KEY not set!"
@@ -9,9 +9,9 @@ else
   echo "[entrypoint] OPENAI_API_KEY: set"
 fi
 
-# Start agent via AG-UI protocol (serve.py wraps the original graph)
+# Start agent via AG-UI protocol
 echo "[entrypoint] Starting agent on port 8123..."
-AGENT_PORT=8123 python agent/serve.py 2>&1 &
+AGENT_PORT=8123 dotnet ./agent/IndustrialKgAgent.dll 2>&1 &
 AGENT_PID=$!
 
 sleep 3

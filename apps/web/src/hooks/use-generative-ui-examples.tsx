@@ -4,7 +4,7 @@ import { useTheme } from "@/hooks/use-theme";
 import {
   useComponent,
   useFrontendTool,
-  useInterrupt,
+  useHumanInTheLoop,
   useDefaultRenderTool,
 } from "@copilotkit/react-core/v2";
 
@@ -29,23 +29,33 @@ const IGNORED_TOOLS = [
 export const useGenerativeUIExamples = () => {
   const { theme, setTheme } = useTheme();
 
-  // Durable Human-in-the-Loop: the backend `schedule_time` tool calls LangGraph
-  // interrupt(), which surfaces here as an AG-UI on_interrupt event. The run is
-  // paused at a checkpoint (survives restart/reconnect) until resolve() resumes
-  // it — unlike the frontend-tool HITL, which hangs if the tab closes mid-run.
-  useInterrupt({
-    enabled: (event) => event.value?.kind === "scheduleTime",
-    render: ({ event, resolve }) => (
-      // interrupt render has no `status` — it only fires while awaiting input,
-      // so the picker is always in its "executing" (selectable) state.
-      <MeetingTimePicker
-        status="executing"
-        respond={resolve}
-        reasonForScheduling={event.value?.reasonForScheduling}
-        meetingDuration={event.value?.meetingDuration}
-      />
-    ),
-  });
+  // Human-in-the-Loop: `schedule_time` is a frontend tool (not a backend LangGraph
+  // interrupt() anymore) — this is the officially-documented HITL pattern for a
+  // Microsoft Agent Framework backend (docs.copilotkit.ai/ms-agent-dotnet/human-in-the-loop).
+  // Trade-off vs the old interrupt(): the pending request lives in this component's
+  // state, so it doesn't survive a page reload mid-wait (the old checkpoint-based
+  // interrupt theoretically did, though the current deployment's in-memory
+  // checkpointer wasn't actually durable across restarts either).
+  useHumanInTheLoop(
+    {
+      name: "schedule_time",
+      description:
+        "Schedule a meeting with the user. Presents selectable time slots in the UI and pauses until the user picks one (or declines).",
+      parameters: z.object({
+        reasonForScheduling: z.string().describe("Very brief reason for the meeting"),
+        meetingDuration: z.number().describe("Meeting length in minutes"),
+      }),
+      render: ({ args, status, respond }) => (
+        <MeetingTimePicker
+          status={status}
+          respond={respond}
+          reasonForScheduling={args.reasonForScheduling}
+          meetingDuration={args.meetingDuration}
+        />
+      ),
+    },
+    [],
+  );
 
   // Controlled Generative UI (frontend-defined chart components)
   useComponent({
