@@ -4,15 +4,10 @@ import {
   createCopilotRuntimeHandler,
   InMemoryAgentRunner,
 } from "@copilotkit/runtime/v2";
-import { LangGraphAgent } from "@copilotkit/runtime/langgraph";
+import { HttpAgent } from "@ag-ui/client";
 
-const defaultAgent = new LangGraphAgent({
-  deploymentUrl:
-    process.env.AGENT_URL ||
-    process.env.LANGGRAPH_DEPLOYMENT_URL ||
-    "http://localhost:8123",
-  graphId: process.env.AGENT_GRAPH_ID || "sample_agent",
-  langsmithApiKey: process.env.LANGSMITH_API_KEY || "",
+const defaultAgent = new HttpAgent({
+  url: `${process.env.AGENT_URL || "http://localhost:8123"}/`,
 });
 
 const runtime = new CopilotRuntime({
