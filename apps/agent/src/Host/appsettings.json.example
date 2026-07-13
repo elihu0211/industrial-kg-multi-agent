@@ -1,0 +1,12 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "OPENAI_API_KEY": "sk-...",
+  "LLM_MODEL": "gpt-4.1",
+  "A2UI_MODEL": "gpt-4.1"
+}

@@ -7,21 +7,15 @@
 
   "packageRules": [
     {
-      "description": "CopilotKit — JS + Python together",
-      "matchPackageNames": [
-        "@copilotkit/**",
-        "copilotkit",
-        "ag-ui-protocol",
-        "ag-ui-langgraph",
-        "@ag-ui/**"
-      ],
+      "description": "CopilotKit — JS",
+      "matchPackageNames": ["@copilotkit/**", "copilotkit", "@ag-ui/**"],
       "groupName": "CopilotKit / AG-UI",
       "automerge": false
     },
     {
-      "description": "LangChain ecosystem — langgraph, langchain, langsmith",
-      "matchPackageNames": ["langgraph*", "langchain*", "langsmith*"],
-      "groupName": "LangChain ecosystem",
+      "description": "Microsoft Agent Framework / AG-UI .NET — preview channel, review manually",
+      "matchPackageNames": ["Microsoft.Agents.AI*", "AGUI.*"],
+      "groupName": "Microsoft Agent Framework / AG-UI .NET",
       "automerge": false
     },
     {
@@ -52,14 +46,6 @@
       "matchUpdateTypes": ["minor", "patch"]
     },
     {
-      "description": "Python runtime tools — uv, Python base image",
-      "matchPackageNames": ["uv", "ghcr.io/astral-sh/uv"],
-      "groupName": "uv",
-      "automerge": true,
-      "automergeType": "pr",
-      "matchUpdateTypes": ["minor", "patch"]
-    },
-    {
       "description": "Docker base images",
       "matchManagers": ["dockerfile"],
       "groupName": "Docker base images",
@@ -67,19 +53,19 @@
     }
   ],
 
-  "uv": {
-    "enabled": true,
-    "fileMatch": ["(^|/)pyproject\\.toml$"]
+  "npm": {
+    "enabled": true
   },
 
-  "npm": {
+  "nuget": {
     "enabled": true
   },
 
   "ignorePaths": [
     "**/node_modules/**",
-    "**/.venv/**",
     "**/dist/**",
-    "**/.next/**"
+    "**/.next/**",
+    "**/bin/**",
+    "**/obj/**"
   ]
 }

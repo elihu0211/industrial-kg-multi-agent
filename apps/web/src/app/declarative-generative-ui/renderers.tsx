@@ -30,6 +30,21 @@ import type { CatalogRenderers } from "@copilotkit/a2ui-renderer";
 import { demonstrationCatalogDefinitions } from "./definitions";
 import type { DemonstrationCatalogDefinitions } from "./definitions";
 
+// Row/Column's `children` prop is declared in the Zod schema as `string[] |
+// { componentId, path }` (see definitions.ts), but GenericBinder resolves
+// the structural `{ componentId, path }` form into an array of
+// `{ id, basePath }` template-child descriptors before the renderer ever
+// sees it — a runtime shape the static Zod type doesn't capture.
+type LayoutChildItem = string | { id: string; basePath?: string };
+
+// Same story: `children` render-prop is typed as `(componentId: string) =>
+// ReactNode`, but structural/template children additionally pass a
+// `basePath` so each repeated instance binds to its own data-model slice.
+type LayoutChildrenRenderer = (
+  componentId: string,
+  basePath?: string,
+) => React.ReactNode;
+
 // ─── Theme-aware colors ─────────────────────────────────────────────
 
 const c = {
@@ -51,12 +66,13 @@ function ActionButton({
 }: {
   label: string;
   doneLabel: string;
-  action: any;
+  action?: (() => void) | null;
   children?: React.ReactNode;
 }) {
   const [done, setDone] = useState(false);
   return (
     <button
+      type="button"
       disabled={done}
       style={{
         width: "100%",
@@ -68,7 +84,7 @@ function ActionButton({
         fontSize: "0.85rem",
         fontWeight: 500,
         cursor: done ? "default" : "pointer",
-        transition: "all 0.2s ease",
+        transition: "background 0.2s ease, border-color 0.2s ease, color 0.2s ease",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -105,9 +121,8 @@ function ActionButton({
 const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefinitions> =
   {
     Title: ({ props }) => {
-      const Tag = (
-        props.level === "h1" ? "h1" : props.level === "h3" ? "h3" : "h2"
-      ) as keyof JSX.IntrinsicElements;
+      const Tag: "h1" | "h2" | "h3" =
+        props.level === "h1" ? "h1" : props.level === "h3" ? "h3" : "h2";
       const sizes: Record<string, string> = {
         h1: "1.75rem",
         h2: "1.25rem",
@@ -138,7 +153,10 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
         end: "flex-end",
         spaceBetween: "space-between",
       };
-      const items = Array.isArray(props.children) ? props.children : [];
+      const items: LayoutChildItem[] = Array.isArray(props.children)
+        ? props.children
+        : [];
+      const renderChild = children as LayoutChildrenRenderer;
       return (
         <div
           style={{
@@ -152,14 +170,14 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
             width: "100%",
           }}
         >
-          {items.map((item: any, i: number) => {
+          {items.map((item, i) => {
             if (typeof item === "string")
               return (
                 <div
                   key={`${item}-${i}`}
                   style={{ flex: "1 1 0", minWidth: 0 }}
                 >
-                  {children(item)}
+                  {renderChild(item)}
                 </div>
               );
             if (item && typeof item === "object" && "id" in item)
@@ -168,7 +186,7 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
                   key={`${item.id}-${i}`}
                   style={{ flex: "1 1 0", minWidth: 0 }}
                 >
-                  {(children as any)(item.id, item.basePath)}
+                  {renderChild(item.id, item.basePath)}
                 </div>
               );
             return null;
@@ -178,7 +196,10 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
     },
 
     Column: ({ props, children }) => {
-      const items = Array.isArray(props.children) ? props.children : [];
+      const items: LayoutChildItem[] = Array.isArray(props.children)
+        ? props.children
+        : [];
+      const renderChild = children as LayoutChildrenRenderer;
       return (
         <div
           style={{
@@ -188,17 +209,17 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
             width: "100%",
           }}
         >
-          {items.map((item: any, i: number) => {
+          {items.map((item, i) => {
             if (typeof item === "string")
               return (
                 <React.Fragment key={`${item}-${i}`}>
-                  {children(item)}
+                  {renderChild(item)}
                 </React.Fragment>
               );
             if (item && typeof item === "object" && "id" in item)
               return (
                 <React.Fragment key={`${item.id}-${i}`}>
-                  {(children as any)(item.id, item.basePath)}
+                  {renderChild(item.id, item.basePath)}
                 </React.Fragment>
               );
             return null;
@@ -315,7 +336,7 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
                 outerRadius={80}
                 paddingAngle={2}
               >
-                {data.map((entry: any, i: number) => (
+                {data.map((entry, i) => (
                   <Cell
                     key={i}
                     fill={entry.color ?? COLORS[i % COLORS.length]}
@@ -365,7 +386,7 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
             display: "inline-block",
             padding: "2px 8px",
             borderRadius: "9999px",
-            fontSize: "0.7rem",
+            fontSize: "0.75rem",
             fontWeight: 500,
             background: v.bg,
             color: v.color,
@@ -390,7 +411,7 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
           >
             <thead>
               <tr>
-                {cols.map((col: any) => (
+                {cols.map((col) => (
                   <th
                     key={col.key}
                     style={{
@@ -399,7 +420,7 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
                       borderBottom: `2px solid ${c.border}`,
                       color: c.muted,
                       fontWeight: 600,
-                      fontSize: "0.7rem",
+                      fontSize: "0.75rem",
                       textTransform: "uppercase",
                       letterSpacing: "0.05em",
                     }}
@@ -410,9 +431,9 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
               </tr>
             </thead>
             <tbody>
-              {rows.map((row: any, i: number) => (
+              {rows.map((row: Record<string, unknown>, i: number) => (
                 <tr key={i} style={{ borderBottom: `1px solid ${c.divider}` }}>
-                  {cols.map((col: any) => (
+                  {cols.map((col) => (
                     <td
                       key={col.key}
                       style={{ padding: "8px 12px", color: c.cardFg }}
@@ -429,23 +450,31 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
     },
 
     Button: ({ props, children }) => {
+      // `action` is declared in Zod as the declarative { event } config so
+      // GenericBinder recognizes it as ACTION and resolves it to a callable
+      // before the renderer sees it — see the LayoutChild* comment above.
+      const action = props.action as unknown as (() => void) | null;
       return (
-        <ActionButton label="Click" doneLabel="Done" action={props.action}>
+        <ActionButton label="Click" doneLabel="Done" action={action}>
           {props.child ? children(props.child) : null}
         </ActionButton>
       );
     },
 
     FlightCard: ({ props: rawProps }) => {
-      // The binder resolves path bindings to strings at runtime.
-      const props = rawProps as Record<string, any>;
+      // Every DynString field resolves to a plain string at runtime, and
+      // `action` resolves to a callable — see the LayoutChild* comment above
+      // for why the static Zod type doesn't (and can't) reflect this.
+      const props = rawProps as unknown as Record<string, string | undefined> & {
+        action?: (() => void) | null;
+      };
       const statusColors: Record<string, string> = {
         "On Time": "#22c55e",
         Delayed: "#eab308",
         Cancelled: "#ef4444",
       };
       const dotColor =
-        props.statusColor ?? statusColors[props.status] ?? "#22c55e";
+        props.statusColor ?? statusColors[props.status ?? ""] ?? "#22c55e";
 
       return (
         <div
@@ -473,6 +502,11 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element --
+                  airlineLogo is an agent-generated URL on an arbitrary domain
+                  (Google's favicon API for whatever airline it picks); next/image
+                  needs domains allowlisted ahead of time via remotePatterns, which
+                  isn't possible for a domain chosen at request time. */}
               <img
                 src={props.airlineLogo}
                 alt={props.airline}

@@ -131,9 +131,10 @@ export function MeetingTimePicker({
 
         {status === "executing" && (
           <div className="space-y-3">
-            {slots.map((slot, index) => (
+            {slots.map((slot) => (
               <button
-                key={index}
+                type="button"
+                key={`${slot.date} ${slot.time}`}
                 onClick={() => handleSelectSlot(slot)}
                 className="group w-full px-6 py-5 rounded-[var(--radius)]
                   border border-[var(--border)]

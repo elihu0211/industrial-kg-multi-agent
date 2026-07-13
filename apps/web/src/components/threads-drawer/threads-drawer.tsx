@@ -32,13 +32,15 @@ const TITLE_ANIMATION_MS = 360;
 const UNTITLED_THREAD_LABEL = "New thread";
 const RUNTIME_BASE_PATH = "/api/copilotkit";
 
+const THREAD_TIMESTAMP_FORMAT = new Intl.DateTimeFormat("en-US", {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
+
 function formatThreadTimestamp(updatedAt: string): string {
   const timestamp = new Date(updatedAt);
   if (Number.isNaN(timestamp.getTime())) return "Updated recently";
-  return new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(timestamp);
+  return THREAD_TIMESTAMP_FORMAT.format(timestamp);
 }
 
 function cx(...classNames: Array<string | false | undefined>): string {
@@ -99,19 +101,26 @@ export default function ThreadsDrawer({
   );
 
   const hasMountedRef = useRef(false);
-  const hasLoadedOnceRef = useRef(false);
-  const stableThreadsRef = useRef<DrawerThread[]>(threads);
   const previousThreadIdsRef = useRef<Set<string>>(new Set());
   const previousNamesRef = useRef<Map<string, string | null>>(new Map());
   const entryTimeoutsRef = useRef<Map<string, number>>(new Map());
   const titleTimeoutsRef = useRef<Map<string, number>>(new Map());
 
-  if (!isLoading) {
-    hasLoadedOnceRef.current = true;
-    stableThreadsRef.current = threads;
+  // Keep the last successfully-loaded threads around while a refetch (e.g.
+  // after switching the archived filter) is in flight, so the list doesn't
+  // flash empty/skeleton — only a genuine first load should show that.
+  // Updating state during render (rather than a ref) is the React-documented
+  // way to do this: https://react.dev/reference/react/useState#storing-information-from-previous-renders
+  // — it re-renders immediately with no extra paint, unlike an effect, and
+  // unlike a ref mutation it doesn't break React Compiler's purity assumptions.
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+  const [stableThreads, setStableThreads] = useState<DrawerThread[]>(threads);
+  if (!isLoading && (!hasLoadedOnce || stableThreads !== threads)) {
+    setHasLoadedOnce(true);
+    setStableThreads(threads);
   }
   const displayThreads: DrawerThread[] =
-    isLoading && hasLoadedOnceRef.current ? stableThreadsRef.current : threads;
+    isLoading && hasLoadedOnce ? stableThreads : threads;
   const [enteringThreadIds, setEnteringThreadIds] = useState<
     Record<string, true>
   >({});
@@ -120,11 +129,16 @@ export default function ThreadsDrawer({
   >({});
 
   useEffect(() => {
+    // Same Map instances as mutated by the effect below — capturing the
+    // reference here (not re-reading .current inside the cleanup) is what
+    // the linter wants, and it's equivalent since Maps are mutated in place.
+    const entryTimeouts = entryTimeoutsRef.current;
+    const titleTimeouts = titleTimeoutsRef.current;
     return () => {
-      for (const timeoutId of entryTimeoutsRef.current.values()) {
+      for (const timeoutId of entryTimeouts.values()) {
         window.clearTimeout(timeoutId);
       }
-      for (const timeoutId of titleTimeoutsRef.current.values()) {
+      for (const timeoutId of titleTimeouts.values()) {
         window.clearTimeout(timeoutId);
       }
     };
@@ -208,7 +222,7 @@ export default function ThreadsDrawer({
     previousNamesRef.current = new Map(threads.map((t) => [t.id, t.name]));
   }, [threads, isLoading]);
 
-  const isInitialLoading = isLoading && !hasLoadedOnceRef.current;
+  const isInitialLoading = isLoading && !hasLoadedOnce;
   if (error) {
     console.error("Unable to load threads", error);
   }

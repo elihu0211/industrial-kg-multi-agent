@@ -1,18 +1,13 @@
 import {
   CopilotRuntime,
   CopilotKitIntelligence,
-  createCopilotHonoHandler,
+  createCopilotRuntimeHandler,
   InMemoryAgentRunner,
 } from "@copilotkit/runtime/v2";
-import { LangGraphAgent } from "@copilotkit/runtime/langgraph";
+import { HttpAgent } from "@ag-ui/client";
 
-const defaultAgent = new LangGraphAgent({
-  deploymentUrl:
-    process.env.AGENT_URL ||
-    process.env.LANGGRAPH_DEPLOYMENT_URL ||
-    "http://localhost:8123",
-  graphId: "sample_agent",
-  langsmithApiKey: process.env.LANGSMITH_API_KEY || "",
+const defaultAgent = new HttpAgent({
+  url: `${process.env.AGENT_URL || "http://localhost:8123"}/`,
 });
 
 const runtime = new CopilotRuntime({
@@ -48,12 +43,13 @@ const runtime = new CopilotRuntime({
   },
 });
 
-const app = createCopilotHonoHandler({
+// Native fetch handler (SSE-based AG-UI protocol). No Hono/Express adapter.
+const handler = createCopilotRuntimeHandler({
   runtime,
   basePath: "/api/copilotkit",
 });
 
-export const GET = app.fetch;
-export const POST = app.fetch;
-export const PATCH = app.fetch;
-export const DELETE = app.fetch;
+export const GET = handler;
+export const POST = handler;
+export const PATCH = handler;
+export const DELETE = handler;

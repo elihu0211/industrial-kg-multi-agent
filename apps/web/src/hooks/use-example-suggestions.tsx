@@ -6,7 +6,7 @@
  *
  * Showcase mode (showcase.json) controls which pills are visually highlighted.
  * Highlight styling: globals.css (.a2ui-highlight, .opengenui-highlight)
- * A2UI agent tools: agent/src/a2ui_fixed_schema.py, a2ui_dynamic_schema.py
+ * A2UI agent tools: apps/agent/Tools/A2uiFixedSchema.cs, A2uiDynamicSchema.cs
  * A2UI catalog: src/app/declarative-generative-ui/
  */
 import { useConfigureSuggestions } from "@copilotkit/react-core/v2";
@@ -28,9 +28,9 @@ export const useExampleSuggestions = () => {
           "Show me a bar chart of our expenses by category. Use the query_data tool to fetch the data first, then render it with the barChart component.",
       },
       {
-        title: "Schedule Meeting (Human In The Loop)",
+        title: "Schedule Meeting (Frontend Tool HITL)",
         message:
-          "I'd like to schedule a 30-minute meeting to learn about CopilotKit. Please use the scheduleTime tool to let me pick a time.",
+          "I'd like to schedule a 30-minute meeting to learn about CopilotKit. Please use the schedule_time tool to let me pick a time.",
       },
       {
         title: "Search Flights (A2UI Fixed Schema)",
