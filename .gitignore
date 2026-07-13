@@ -16,8 +16,8 @@ obj/
 *.user
 .vs/
 # Holds real secrets (OPENAI_API_KEY, OPENAI_BASE_URL) — see appsettings.json.example
-apps/agent/appsettings.json
-apps/agent/appsettings.Development.json
+apps/agent/src/IndustrialKgAgent.Host/appsettings.json
+apps/agent/src/IndustrialKgAgent.Host/appsettings.Development.json
 
 # ── Env ──
 .env
