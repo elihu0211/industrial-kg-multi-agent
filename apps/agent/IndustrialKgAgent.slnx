@@ -1,8 +1,8 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="src/IndustrialKgAgent.Application/IndustrialKgAgent.Application.csproj" />
-    <Project Path="src/IndustrialKgAgent.Domain/IndustrialKgAgent.Domain.csproj" />
-    <Project Path="src/IndustrialKgAgent.Host/IndustrialKgAgent.Host.csproj" />
-    <Project Path="src/IndustrialKgAgent.Infrastructure/IndustrialKgAgent.Infrastructure.csproj" />
+    <Project Path="src/Application/IndustrialKgAgent.Application.csproj" />
+    <Project Path="src/Domain/IndustrialKgAgent.Domain.csproj" />
+    <Project Path="src/Host/IndustrialKgAgent.Host.csproj" />
+    <Project Path="src/Infrastructure/IndustrialKgAgent.Infrastructure.csproj" />
   </Folder>
 </Solution>
