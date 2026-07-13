@@ -10,14 +10,14 @@ public sealed class Settings
     public required string LlmModel { get; init; }
     public required string A2uiModel { get; init; }
     public int AgentPort { get; init; } = 8123;
-    /// <summary>Optional OpenAI-compatible gateway endpoint (e.g. a LiteLLM proxy). Null = call OpenAI directly.</summary>
+    /// <summary>選用的、相容 OpenAI 介面的 gateway endpoint（例如 LiteLLM proxy）。null 表示直接呼叫 OpenAI。</summary>
     public string? OpenAiBaseUrl { get; init; }
 
     /// <summary>
-    /// Local dev secrets come from `dotnet user-secrets` (see apps/agent/README or
-    /// `dotnet user-secrets init`), not a .env file — .NET's IConfiguration already
-    /// layers appsettings.json, user secrets, and real environment variables, so
-    /// nothing project-specific is needed here.
+    /// 本機開發用的密鑰來自 `dotnet user-secrets`（詳見 apps/agent/README 或
+    /// `dotnet user-secrets init`），而不是 .env 檔——.NET 的 IConfiguration
+    /// 本身就會依序疊加 appsettings.json、user secrets 與實際的環境變數，
+    /// 所以這裡不需要額外的專案特定處理。
     /// </summary>
     public static Settings FromConfiguration(IConfiguration config) => new()
     {

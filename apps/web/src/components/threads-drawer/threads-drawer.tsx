@@ -53,10 +53,10 @@ export default function ThreadsDrawer({
   onThreadChange,
 }: ThreadsDrawerProps) {
   const [showArchived, setShowArchived] = useState(false);
-  // Start collapsed on narrow screens (tablet + phone) so the panel — which
-  // becomes an off-canvas overlay below 1024px — doesn't cover the content +
-  // chat on load. The drawer is client-mounted, so reading window here is safe
-  // and won't cause a hydration mismatch.
+  // 在窄螢幕（平板 + 手機）預設收合，避免這個在 1024px 以下會變成
+  // off-canvas overlay 的面板，一載入就蓋住內容與 chat。這個 drawer 是在
+  // client 端才 mount，所以在這裡讀 window 是安全的，不會造成 hydration
+  // mismatch。
   const [isOpen, setIsOpen] = useState(
     () => typeof window === "undefined" || window.innerWidth > 1024,
   );
@@ -106,13 +106,12 @@ export default function ThreadsDrawer({
   const entryTimeoutsRef = useRef<Map<string, number>>(new Map());
   const titleTimeoutsRef = useRef<Map<string, number>>(new Map());
 
-  // Keep the last successfully-loaded threads around while a refetch (e.g.
-  // after switching the archived filter) is in flight, so the list doesn't
-  // flash empty/skeleton — only a genuine first load should show that.
-  // Updating state during render (rather than a ref) is the React-documented
-  // way to do this: https://react.dev/reference/react/useState#storing-information-from-previous-renders
-  // — it re-renders immediately with no extra paint, unlike an effect, and
-  // unlike a ref mutation it doesn't break React Compiler's purity assumptions.
+  // 在 refetch（例如切換 archived 篩選後）進行中時，保留上一次成功載入的
+  // threads，讓清單不會閃現空白/skeleton——只有真正第一次載入才該顯示那個
+  // 畫面。在 render 期間更新 state（而非用 ref）是 React 官方文件建議的
+  // 做法：https://react.dev/reference/react/useState#storing-information-from-previous-renders
+  // ——這樣能立即重新渲染、不會多一次繪製，不像 effect；也不像修改 ref
+  // 那樣會破壞 React Compiler 對純函式的假設。
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [stableThreads, setStableThreads] = useState<DrawerThread[]>(threads);
   if (!isLoading && (!hasLoadedOnce || stableThreads !== threads)) {
@@ -129,9 +128,9 @@ export default function ThreadsDrawer({
   >({});
 
   useEffect(() => {
-    // Same Map instances as mutated by the effect below — capturing the
-    // reference here (not re-reading .current inside the cleanup) is what
-    // the linter wants, and it's equivalent since Maps are mutated in place.
+    // 與下方 effect 修改的是同一個 Map instance——在這裡先捕捉參考（而不是
+    // 在 cleanup 內重新讀取 .current）是 linter 要求的寫法，由於 Map 是
+    // 原地修改，兩種寫法效果等價。
     const entryTimeouts = entryTimeoutsRef.current;
     const titleTimeouts = titleTimeoutsRef.current;
     return () => {
@@ -145,9 +144,8 @@ export default function ThreadsDrawer({
   }, []);
 
   useEffect(() => {
-    // Skip diffing while the store is refetching (e.g. after a filter change
-    // clears the list). Otherwise every thread would be treated as newly
-    // added once the new page lands.
+    // 在 store 重新 fetch 時（例如篩選條件變更清空清單）先跳過 diff，
+    // 否則新的一頁資料一到，每個 thread 都會被誤判為新增。
     if (isLoading) return;
 
     const nextThreadIds = new Set(threads.map((t) => t.id));
@@ -159,9 +157,9 @@ export default function ThreadsDrawer({
       return;
     }
 
-    const addedThreadIds = threads
-      .filter((t) => !previousThreadIdsRef.current.has(t.id))
-      .map((t) => t.id);
+    const addedThreadIds = threads.flatMap((t) =>
+      previousThreadIdsRef.current.has(t.id) ? [] : [t.id],
+    );
 
     if (addedThreadIds.length > 0) {
       setEnteringThreadIds((current) => {
@@ -184,18 +182,15 @@ export default function ThreadsDrawer({
       });
     }
 
-    const renamedThreadIds = threads
-      .filter((t) => {
-        // Only reveal when an already-tracked thread's name transitions from
-        // null → named. Threads appearing for the first time (e.g. on a
-        // filter switch) already have their final name and should not trigger
-        // the title reveal animation — that would layer a blur/translateY
-        // onto the row's enter animation and produce a visible jitter.
-        if (!previousNamesRef.current.has(t.id)) return false;
-        const prev = previousNamesRef.current.get(t.id) ?? null;
-        return prev === null && t.name !== null;
-      })
-      .map((t) => t.id);
+    // 只在「已追蹤的 thread」名稱從 null 轉為有名稱時才觸發顯示動畫。
+    // 第一次出現的 thread（例如切換篩選時）已經是最終名稱，不應觸發
+    // 標題顯示動畫——那樣會在該列的進場動畫上疊加 blur/translateY，
+    // 造成明顯的抖動。
+    const renamedThreadIds = threads.flatMap((t) => {
+      if (!previousNamesRef.current.has(t.id)) return [];
+      const prev = previousNamesRef.current.get(t.id) ?? null;
+      return prev === null && t.name !== null ? [t.id] : [];
+    });
 
     if (renamedThreadIds.length > 0) {
       setRevealedTitleIds((current) => {
@@ -234,8 +229,8 @@ export default function ThreadsDrawer({
         className={cx(styles.drawer, styles.drawerClosed)}
       >
         <div className={styles.collapsedRail}>
-          {/* Native title here (not the styled ::after): the collapsed rail
-              sits at the viewport's left edge where a centered tooltip clips. */}
+          {/* 這裡用原生 title（而非套樣式的 ::after）：收合後的側欄
+              位於 viewport 左邊緣，置中的 tooltip 在那裡會被裁切。 */}
           <button
             aria-label="Open threads drawer"
             title="Expand"
@@ -540,61 +535,54 @@ function ConfirmDialog({
 }: ConfirmDialogProps) {
   const titleId = useId();
   const descId = useId();
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCancel();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onCancel]);
+    dialogRef.current?.showModal();
+  }, []);
 
   if (typeof document === "undefined") return null;
 
   return createPortal(
-    <div
-      className={styles.dialogOverlay}
-      role="presentation"
-      onClick={onCancel}
+    <dialog
+      ref={dialogRef}
+      aria-describedby={descId}
+      aria-labelledby={titleId}
+      className={styles.dialog}
+      onCancel={onCancel}
+      onClick={(e) => {
+        if (e.target === dialogRef.current) onCancel();
+      }}
     >
-      <div
-        aria-describedby={descId}
-        aria-labelledby={titleId}
-        aria-modal="true"
-        className={styles.dialog}
-        role="dialog"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 className={styles.dialogTitle} id={titleId}>
-          {title}
-        </h3>
-        <p className={styles.dialogDescription} id={descId}>
-          {description}
-        </p>
-        <div className={styles.dialogActions}>
-          <button
-            autoFocus
-            className={cx(styles.dialogButton, styles.dialogButtonSecondary)}
-            type="button"
-            onClick={onCancel}
-          >
-            {cancelLabel}
-          </button>
-          <button
-            className={cx(
-              styles.dialogButton,
-              destructive
-                ? styles.dialogButtonDestructive
-                : styles.dialogButtonPrimary,
-            )}
-            type="button"
-            onClick={onConfirm}
-          >
-            {confirmLabel}
-          </button>
-        </div>
+      <h3 className={styles.dialogTitle} id={titleId}>
+        {title}
+      </h3>
+      <p className={styles.dialogDescription} id={descId}>
+        {description}
+      </p>
+      <div className={styles.dialogActions}>
+        <button
+          autoFocus
+          className={cx(styles.dialogButton, styles.dialogButtonSecondary)}
+          type="button"
+          onClick={onCancel}
+        >
+          {cancelLabel}
+        </button>
+        <button
+          className={cx(
+            styles.dialogButton,
+            destructive
+              ? styles.dialogButtonDestructive
+              : styles.dialogButtonPrimary,
+          )}
+          type="button"
+          onClick={onConfirm}
+        >
+          {confirmLabel}
+        </button>
       </div>
-    </div>,
+    </dialog>,
     document.body,
   );
 }

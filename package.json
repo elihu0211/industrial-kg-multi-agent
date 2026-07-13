@@ -13,10 +13,12 @@
     "dev:agent": "dotnet watch run --project apps/agent/src/Host",
     "lint": "pnpm --filter @ikg/web lint",
     "build": "turbo run build",
-    "start": "turbo run start --filter=@ikg/web"
+    "start": "turbo run start --filter=@ikg/web",
+    "doctor": "npx react-doctor@latest"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
+    "react-doctor": "^0.7.6",
     "turbo": "^2.5.0"
   }
 }

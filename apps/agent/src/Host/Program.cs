@@ -55,9 +55,9 @@ List<AITool> tools =
     AIFunctionFactory.Create(todosTool.GetTodos, options: new() { Name = "get_todos", SerializerOptions = jsonOptions }),
     AIFunctionFactory.Create(a2uiDynamicSchemaTool.GenerateA2ui, options: new() { Name = "generate_a2ui", SerializerOptions = jsonOptions }),
     AIFunctionFactory.Create(a2uiFixedSchemaTool.SearchFlights, options: new() { Name = "search_flights", SerializerOptions = jsonOptions }),
-    // schedule_time is intentionally NOT registered here: it's a CopilotKit frontend
-    // tool (useHumanInTheLoop), auto-forwarded through RunAgentInput.Tools with no
-    // backend registration needed — see apps/web's use-generative-ui-examples.tsx.
+    // schedule_time 刻意不在此註冊：它是 CopilotKit 前端工具（useHumanInTheLoop），
+    // 會透過 RunAgentInput.Tools 自動轉發，不需要後端註冊——
+    // 詳見 apps/web 的 use-generative-ui-examples.tsx。
 ];
 
 ChatClient openAiChatClient = settings.CreateOpenAiClient().GetChatClient(settings.LlmModel);
@@ -69,7 +69,7 @@ ChatClientAgent baseAgent = openAiChatClient.AsAIAgent(new ChatClientAgentOption
     {
         Instructions = SystemPrompt.Text,
         Tools = tools,
-        AllowMultipleToolCalls = false, // matches Python's parallel_tool_calls=False
+        AllowMultipleToolCalls = false, // 對應 Python 版的 parallel_tool_calls=False
     },
 });
 

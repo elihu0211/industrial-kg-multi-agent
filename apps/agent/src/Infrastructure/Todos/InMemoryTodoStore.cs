@@ -2,16 +2,15 @@ using IndustrialKgAgent.Domain.Todos;
 
 namespace IndustrialKgAgent.Infrastructure.Todos;
 
-// ponytail: plain instance field, not per-request-scoped — verified empirically that
-// AsyncLocal does NOT flow into MSAF's tool-invocation call (the framework
-// invokes tool delegates on a branch that doesn't inherit the caller's
-// ExecutionContext), so AsyncLocal-based per-request isolation is a dead end
-// here, not just unnecessary complexity. Register this as a DI singleton for
-// this app's single-conversation-at-a-time demo use; concurrent requests from
-// different users would race on it. Upgrade path if that ever matters:
-// AIFunctionFactory would need a way to pass request-scoped context into the
-// tool delegate (e.g. an AIFunctionArguments-aware overload), which as of the
-// currently-installed Microsoft.Agents.AI 1.13.0 isn't wired up for this.
+// ponytail: 單純的 instance field，並非依請求區分——已實際驗證過 AsyncLocal
+// 不會流入 MSAF 的 tool-invocation call（框架是在一個不會繼承呼叫端
+// ExecutionContext 的分支上呼叫 tool delegate），所以以 AsyncLocal 做
+// per-request 隔離在這裡走不通，不只是多餘的複雜度而已。將此註冊為 DI
+// singleton 是為了這個 app「同一時間僅一組對話」的展示用途；不同使用者的
+// 並行請求會在這裡互相競爭。若之後真的需要處理這個問題，升級方向是：
+// AIFunctionFactory 需要提供一種方式，把 request-scoped context 傳進
+// tool delegate（例如支援 AIFunctionArguments 的多載），但目前安裝的
+// Microsoft.Agents.AI 1.13.0 版本尚未支援。
 public sealed class InMemoryTodoStore : ITodoStore
 {
     private List<Todo> _todos = [];

@@ -10,7 +10,7 @@ function Checkbox({ className, ref, ...props }: React.ComponentProps<typeof Chec
     <CheckboxPrimitive.Root
       ref={ref}
       className={cn(
-        "peer h-5 w-5 shrink-0 rounded-md border border-[var(--border)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[var(--primary)] data-[state=checked]:text-[var(--primary-foreground)] data-[state=checked]:border-transparent cursor-pointer transition-colors",
+        "peer h-5 w-5 shrink-0 rounded-md border border-(--border) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--ring) disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-(--primary) data-[state=checked]:text-(--primary-foreground) data-[state=checked]:border-transparent cursor-pointer transition-colors",
         className,
       )}
       {...props}

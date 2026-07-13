@@ -1,9 +1,9 @@
 namespace IndustrialKgAgent.Domain.A2ui;
 
 /// <summary>
-/// Framework-agnostic A2UI v0.9 operation builders. The CopilotKit frontend
-/// detects the well-known "a2ui_operations" key inside a tool result and
-/// renders it — these are plain JSON-shaped objects, nothing MSAF-specific.
+/// 與框架無關的 A2UI v0.9 operation 產生器。CopilotKit 前端會偵測 tool result
+/// 中知名的 "a2ui_operations" key 並加以渲染——這些都只是單純的 JSON 物件，
+/// 與 MSAF 無關。
 /// </summary>
 public static class A2uiOperations
 {

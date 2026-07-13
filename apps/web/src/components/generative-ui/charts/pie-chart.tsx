@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { CHART_COLORS } from "./config";
+import { PieChartProps } from "./pie-chart.schema";
 import {
   Card,
   CardHeader,
@@ -8,20 +8,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 
-export const PieChartProps = z.object({
-  title: z.string().describe("Chart title"),
-  description: z.string().describe("Brief description or subtitle"),
-  data: z.array(
-    z.object({
-      label: z.string(),
-      value: z.number(),
-    }),
-  ),
-});
-
-type PieChartProps = z.infer<typeof PieChartProps>;
-
-/** Custom SVG donut chart built with <circle> + stroke-dasharray. */
+/** 以 <circle> + stroke-dasharray 打造的自訂 SVG donut chart。 */
 function DonutChart({
   data,
   size = 240,
@@ -37,7 +24,7 @@ function DonutChart({
 
   const total = data.reduce((sum, d) => sum + (Number(d.value) || 0), 0);
 
-  // Calculate each slice's arc length and starting position
+  // 計算每個扇形的弧長與起始位置
   const arcs = data.map(
     (item) => (total > 0 ? (Number(item.value) || 0) / total : 0) * circumference,
   );
@@ -45,8 +32,8 @@ function DonutChart({
     ...item,
     arc: arcs[index],
     gap: circumference - arcs[index],
-    // Negative dashoffset shifts the dash forward (clockwise) to the correct
-    // position; the offset is the sum of every preceding slice's arc length.
+    // 負的 dashoffset 會把虛線往前（順時針）推移到正確位置；
+    // 這個位移量是前面所有扇形弧長的總和。
     dashoffset: -arcs.slice(0, index).reduce((sum, arc) => sum + arc, 0),
     color: CHART_COLORS[index % CHART_COLORS.length],
   }));
@@ -58,7 +45,7 @@ function DonutChart({
       className="block mx-auto"
       style={{ maxWidth: size, transform: "scaleX(-1)" }}
     >
-      {/* Background ring */}
+      {/* 背景環 */}
       <circle
         cx={center}
         cy={center}
@@ -67,7 +54,7 @@ function DonutChart({
         stroke="var(--secondary)"
         strokeWidth={strokeWidth}
       />
-      {/* Data slices */}
+      {/* 資料扇形 */}
       {slices.map((slice, i) => (
         <circle
           key={i}
@@ -96,7 +83,7 @@ export function PieChart({ title, description, data }: PieChartProps) {
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-[var(--muted-foreground)] text-center py-8 text-sm">
+          <p className="text-(--muted-foreground) text-center py-8 text-sm">
             No data available
           </p>
         </CardContent>
@@ -115,7 +102,7 @@ export function PieChart({ title, description, data }: PieChartProps) {
       <CardContent className="pt-4">
         <DonutChart data={data} />
 
-        {/* Legend */}
+        {/* 圖例 */}
         <div className="space-y-2 pt-4">
           {data.map((item, index) => {
             const val = Number(item.value) || 0;
@@ -132,13 +119,13 @@ export function PieChart({ title, description, data }: PieChartProps) {
                     backgroundColor: CHART_COLORS[index % CHART_COLORS.length],
                   }}
                 />
-                <span className="flex-1 text-[var(--foreground)] truncate">
+                <span className="flex-1 text-(--foreground) truncate">
                   {item.label}
                 </span>
-                <span className="text-[var(--muted-foreground)] tabular-nums">
+                <span className="text-(--muted-foreground) tabular-nums">
                   {val.toLocaleString()}
                 </span>
-                <span className="text-[var(--muted-foreground)] text-sm w-10 text-right tabular-nums">
+                <span className="text-(--muted-foreground) text-sm w-10 text-right tabular-nums">
                   {pct}%
                 </span>
               </div>

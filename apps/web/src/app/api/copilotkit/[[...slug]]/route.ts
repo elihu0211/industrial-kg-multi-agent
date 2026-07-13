@@ -12,7 +12,7 @@ const defaultAgent = new HttpAgent({
 
 const runtime = new CopilotRuntime({
   agents: { default: defaultAgent },
-  // --- copilotkit:intelligence (remove this block to opt out) ---
+  // --- copilotkit:intelligence（若要停用，移除這個區塊即可）---
   ...(process.env.COPILOTKIT_LICENSE_TOKEN
     ? {
         intelligence: new CopilotKitIntelligence({
@@ -21,13 +21,13 @@ const runtime = new CopilotRuntime({
           wsUrl:
             process.env.INTELLIGENCE_GATEWAY_WS_URL ?? "ws://localhost:4401",
         }),
-        // Demo stub — replace with your real auth-derived user identity before any
-        // multi-user deployment, or all users share one thread history.
+        // 這只是 demo 用的假資料——正式多使用者部署前務必換成從實際驗證
+        // 機制取得的使用者身分，否則所有使用者會共用同一份對話歷史。
         identifyUser: () => ({ id: "demo-user", name: "Demo User" }),
         licenseToken: process.env.COPILOTKIT_LICENSE_TOKEN,
       }
     : { runner: new InMemoryAgentRunner() }),
-  // --- /copilotkit:intelligence ---
+  // --- /copilotkit:intelligence 區塊結束 ---
   openGenerativeUI: true,
   a2ui: {
     injectA2UITool: false,
@@ -43,7 +43,7 @@ const runtime = new CopilotRuntime({
   },
 });
 
-// Native fetch handler (SSE-based AG-UI protocol). No Hono/Express adapter.
+// 原生 fetch handler（基於 SSE 的 AG-UI protocol），不需要 Hono/Express adapter。
 const handler = createCopilotRuntimeHandler({
   runtime,
   basePath: "/api/copilotkit",

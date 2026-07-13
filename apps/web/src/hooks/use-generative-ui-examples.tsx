@@ -8,34 +8,30 @@ import {
   useDefaultRenderTool,
 } from "@copilotkit/react-core/v2";
 
-import {
-  PieChart,
-  PieChartProps,
-} from "@/components/generative-ui/charts/pie-chart";
-import {
-  BarChart,
-  BarChartProps,
-} from "@/components/generative-ui/charts/bar-chart";
+import { PieChart } from "@/components/generative-ui/charts/pie-chart";
+import { PieChartProps } from "@/components/generative-ui/charts/pie-chart.schema";
+import { BarChart } from "@/components/generative-ui/charts/bar-chart";
+import { BarChartProps } from "@/components/generative-ui/charts/bar-chart.schema";
 import { MeetingTimePicker } from "@/components/generative-ui/meeting-time-picker";
 import { ToolReasoning } from "@/components/tool-rendering";
 
-// Rendered by A2UI / internal trackers — never shown as a tool card
+// 由 A2UI／內部追蹤器渲染——不會顯示為 tool card
 const IGNORED_TOOLS = [
-  "render_a2ui", // Rendered by A2UI streaming, not as a tool card
-  "generate_a2ui", // Legacy: rendered by A2UI, not as a tool card
-  "log_a2ui_event", // Internal A2UI event tracker
+  "render_a2ui", // 由 A2UI streaming 渲染，不顯示為 tool card
+  "generate_a2ui", // 舊版：由 A2UI 渲染，不顯示為 tool card
+  "log_a2ui_event", // 內部 A2UI 事件追蹤器
 ];
 
 export const useGenerativeUIExamples = () => {
   const { theme, setTheme } = useTheme();
 
-  // Human-in-the-Loop: `schedule_time` is a frontend tool (not a backend LangGraph
-  // interrupt() anymore) — this is the officially-documented HITL pattern for a
-  // Microsoft Agent Framework backend (docs.copilotkit.ai/ms-agent-dotnet/human-in-the-loop).
-  // Trade-off vs the old interrupt(): the pending request lives in this component's
-  // state, so it doesn't survive a page reload mid-wait (the old checkpoint-based
-  // interrupt theoretically did, though the current deployment's in-memory
-  // checkpointer wasn't actually durable across restarts either).
+  // Human-in-the-Loop：`schedule_time` 是前端工具（不再是後端 LangGraph 的
+  // interrupt()）——這是 Microsoft Agent Framework 後端官方文件記載的 HITL
+  // 模式（docs.copilotkit.ai/ms-agent-dotnet/human-in-the-loop）。與舊版
+  // interrupt() 相比的取捨：待處理的請求存在這個 component 的 state 裡，
+  // 所以在等待過程中重新整理頁面就會遺失（舊版基於 checkpoint 的
+  // interrupt 理論上撐得住，不過目前部署用的 in-memory checkpointer
+  // 其實在重啟後也一樣不會保留）。
   useHumanInTheLoop(
     {
       name: "schedule_time",
@@ -57,7 +53,7 @@ export const useGenerativeUIExamples = () => {
     [],
   );
 
-  // Controlled Generative UI (frontend-defined chart components)
+  // Controlled Generative UI（前端定義的圖表元件）
   useComponent({
     name: "pieChart",
     description: "Controlled Generative UI that displays data as a pie chart.",
@@ -72,7 +68,7 @@ export const useGenerativeUIExamples = () => {
     render: BarChart,
   });
 
-  // Default Tool Rendering (backend tool UI)
+  // Default Tool Rendering（後端工具的 UI）
   useDefaultRenderTool({
     render: ({ name, status, parameters }) => {
       if (IGNORED_TOOLS.includes(name)) return <></>;
@@ -80,7 +76,7 @@ export const useGenerativeUIExamples = () => {
     },
   });
 
-  // Frontend Tools (direct frontend state manipulation)
+  // Frontend Tools（直接操作前端 state）
   useFrontendTool(
     {
       name: "toggleTheme",

@@ -1,13 +1,12 @@
 /**
- * Suggestion pills shown in the chat UI. Each suggestion triggers a specific
- * demo feature when clicked.
+ * 顯示在聊天 UI 中的建議標籤。每個建議點擊後都會觸發特定的展示功能。
  *
- * Ordered from most constrained (fixed UI) to most open (freeform UI).
+ * 排序方式：從限制最多（固定 UI）到最開放（freeform UI）。
  *
- * Showcase mode (showcase.json) controls which pills are visually highlighted.
- * Highlight styling: globals.css (.a2ui-highlight, .opengenui-highlight)
- * A2UI agent tools: apps/agent/Tools/A2uiFixedSchema.cs, A2uiDynamicSchema.cs
- * A2UI catalog: src/app/declarative-generative-ui/
+ * Showcase 模式（showcase.json）控制哪些標籤要視覺上高亮顯示。
+ * 高亮樣式：globals.css（.a2ui-highlight、.opengenui-highlight）
+ * A2UI agent tools：apps/agent/Tools/A2uiFixedSchema.cs、A2uiDynamicSchema.cs
+ * A2UI catalog：src/app/declarative-generative-ui/
  */
 import { useConfigureSuggestions } from "@copilotkit/react-core/v2";
 import showcaseConfig from "../../showcase.json";

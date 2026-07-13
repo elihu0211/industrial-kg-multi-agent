@@ -3,10 +3,9 @@ using IndustrialKgAgent.Domain.A2ui;
 namespace IndustrialKgAgent.Application.Tools;
 
 /// <summary>
-/// generate_a2ui: the primary model calls this with a short description of the
-/// dashboard/UI it wants; <see cref="IA2uiDesigner"/> (a secondary,
-/// independently-configured LLM in the Infrastructure layer) designs the actual
-/// A2UI v0.9 component tree.
+/// generate_a2ui：主要模型會帶著簡短的 dashboard/UI 需求描述呼叫這個工具；
+/// <see cref="IA2uiDesigner"/>（Infrastructure 層中另一個獨立設定的次要 LLM）
+/// 負責設計實際的 A2UI v0.9 component tree。
 /// </summary>
 public sealed class A2uiDynamicSchemaTool(IA2uiDesigner designer)
 {

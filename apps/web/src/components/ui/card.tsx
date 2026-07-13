@@ -6,7 +6,7 @@ function Card({ className, ref, ...props }: React.ComponentProps<"div">) {
     <div
       ref={ref}
       className={cn(
-        "rounded-[var(--radius)] border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] shadow-sm",
+        "rounded-(--radius) border border-(--border) bg-(--card) text-(--card-foreground) shadow-sm",
         className,
       )}
       {...props}
@@ -41,7 +41,7 @@ function CardDescription({ className, ref, ...props }: React.ComponentProps<"div
   return (
     <div
       ref={ref}
-      className={cn("text-sm text-[var(--muted-foreground)]", className)}
+      className={cn("text-sm text-(--muted-foreground)", className)}
       {...props}
     />
   );

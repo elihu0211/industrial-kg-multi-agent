@@ -530,14 +530,7 @@
   overflow: auto;
 }
 
-.dialogOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
+.dialog::backdrop {
   background: var(--threads-overlay-bg, rgb(0 0 0 / 0.5));
   backdrop-filter: blur(2px);
   animation: dialogOverlayEnter 140ms ease-out;
@@ -545,7 +538,7 @@
 
 .dialog {
   width: 100%;
-  max-width: 22rem;
+  max-width: min(22rem, calc(100vw - 2rem));
   padding: 1.1rem 1.1rem 1rem;
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 0.25rem);

@@ -1,20 +1,20 @@
 /**
  * Demonstration Catalog — Component Definitions
  *
- * Platform-agnostic definitions: component names, props (Zod), descriptions.
- * This is the contract between the app and the AI agent. Agents receive these
- * definitions as context so they know what components are available.
+ * 與平台無關的定義：component 名稱、props（Zod）、description。
+ * 這是 app 與 AI agent 之間的契約。Agent 會收到這些定義作為 context，
+ * 藉此得知目前有哪些 component 可用。
  *
- * Renderers (React, React Native, etc.) import these definitions and provide
- * platform-specific implementations, type-checked against the Zod schemas.
+ * Renderer（React、React Native 等）會匯入這些定義，並提供各自平台的實作，
+ * 並依 Zod schema 做型別檢查。
  */
 
 import { z } from "zod";
 
 /**
- * Dynamic string: accepts either a literal string or a data-model path binding
- * like `{ path: "airline" }`. The GenericBinder resolves path bindings to the
- * actual value at render time.
+ * Dynamic string：可接受字面字串，或是像 `{ path: "airline" }` 這樣的
+ * data-model path binding。GenericBinder 會在渲染時把 path binding
+ * 解析成實際的值。
  */
 const DynString = z.union([z.string(), z.object({ path: z.string() })]);
 
@@ -27,9 +27,9 @@ export const demonstrationCatalogDefinitions = {
     }),
   },
 
-  // Text: removed — the basic catalog's Text uses DynamicStringSchema
-  // which supports path bindings (e.g. { path: "flights[*].airline" }).
-  // Overriding it with z.string() breaks fixed-schema data binding.
+  // Text：已移除——basic catalog 的 Text 使用支援 path binding 的
+  // DynamicStringSchema（例如 { path: "flights[*].airline" }）。
+  // 若改用 z.string() 覆寫，會破壞 fixed-schema 的資料綁定。
 
   Row: {
     description: "Horizontal layout container.",
@@ -37,8 +37,8 @@ export const demonstrationCatalogDefinitions = {
       gap: z.number().optional(),
       align: z.string().optional(),
       justify: z.string().optional(),
-      // Union with { componentId, path } so GenericBinder treats this as
-      // STRUCTURAL and resolves template children from the data model.
+      // 與 { componentId, path } 做 union，讓 GenericBinder 將其視為
+      // STRUCTURAL，並從 data model 解析出 template children。
       children: z.union([
         z.array(z.string()),
         z.object({ componentId: z.string(), path: z.string() }),
@@ -51,7 +51,7 @@ export const demonstrationCatalogDefinitions = {
     props: z.object({
       gap: z.number().optional(),
       align: z.string().optional(),
-      // Same union as Row — required for template children support.
+      // 與 Row 相同的 union——為了支援 template children 而需要。
       children: z.union([
         z.array(z.string()),
         z.object({ componentId: z.string(), path: z.string() }),
@@ -133,7 +133,7 @@ export const demonstrationCatalogDefinitions = {
           "The ID of the child component (e.g. a Text component for the label).",
         ),
       variant: z.enum(["primary", "secondary", "ghost"]).optional(),
-      // Union with { event } so GenericBinder resolves this as ACTION → callable () => void.
+      // 與 { event } 做 union，讓 GenericBinder 將其解析為 ACTION → callable () => void。
       action: z
         .union([
           z.object({
@@ -179,6 +179,6 @@ export const demonstrationCatalogDefinitions = {
   },
 };
 
-/** Type helper for renderers */
+/** 給 renderer 使用的型別輔助工具 */
 export type DemonstrationCatalogDefinitions =
   typeof demonstrationCatalogDefinitions;

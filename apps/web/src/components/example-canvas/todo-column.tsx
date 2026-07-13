@@ -42,10 +42,10 @@ export function TodoColumn({
 }: TodoColumnProps) {
   return (
     <section aria-label={`${title} column`} className="flex-1 min-w-0">
-      {/* Header */}
+      {/* 標題列 */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-bold tracking-tight text-[var(--foreground)]">
+          <h2 className="text-lg font-bold tracking-tight text-(--foreground)">
             {title}
           </h2>
           <Badge variant="secondary">{todos.length}</Badge>
@@ -63,10 +63,10 @@ export function TodoColumn({
         )}
       </div>
 
-      {/* Cards */}
+      {/* 卡片列表 */}
       <div className="space-y-3">
         {todos.length === 0 ? (
-          <div className="text-center text-sm rounded-[var(--radius)] border-2 border-dashed border-[var(--border)] p-5 min-h-[151px] flex items-center justify-center text-[var(--muted-foreground)]">
+          <div className="text-center text-sm rounded-(--radius) border-2 border-dashed border-(--border) p-5 min-h-[151px] flex items-center justify-center text-(--muted-foreground)">
             {emptyMessage}
           </div>
         ) : (
