@@ -1,27 +1,22 @@
 using System.ComponentModel;
 using Microsoft.Extensions.AI;
 using OpenAI.Chat;
-using IndustrialKgAgent.Config;
+using IndustrialKgAgent.Domain.A2ui;
+using IndustrialKgAgent.Infrastructure.Configuration;
 
-namespace IndustrialKgAgent.Tools;
+namespace IndustrialKgAgent.Infrastructure.Ai;
 
 /// <summary>
-/// generate_a2ui: the primary model calls this with a short description of the
-/// dashboard/UI it wants; a secondary, independently-configured LLM (A2UI_MODEL)
-/// designs the actual A2UI v0.9 component tree via a forced single tool call.
+/// Designs A2UI surfaces via a secondary, independently-configured LLM (A2UI_MODEL)
+/// that responds with a forced single tool call.
 ///
 /// Unlike the Python version (which read raw conversation history server-side via
 /// a framework-injected ToolRuntime), the description comes in as a normal tool
 /// argument — matching CopilotKit's own official .NET reference
 /// (DeclarativeGenUiAgent) for this exact pattern. MSAF tool delegates have no
 /// ambient access to conversation history, so this is the idiomatic way to do it.
-///
-/// Instance class (not static) so Settings is captured via the constructor instead
-/// of becoming an LLM-visible tool parameter — AIFunctionFactory.Create builds the
-/// schema from GenerateA2ui's own parameters, so anything the tool needs beyond
-/// what the model should fill in has to live on `this`.
 /// </summary>
-public sealed class A2uiDynamicSchema(Settings settings)
+public sealed class OpenAiA2uiDesigner(Settings settings) : IA2uiDesigner
 {
     private const string CustomCatalogId = "copilotkit://app-dashboard-catalog";
 
@@ -33,11 +28,7 @@ public sealed class A2uiDynamicSchema(Settings settings)
         name: "render_a2ui",
         description: "Render a dynamic A2UI v0.9 surface.");
 
-    [Description("Generate dynamic A2UI components based on the conversation. A secondary LLM designs the UI schema and data.")]
-    public async Task<object> GenerateA2ui(
-        [Description("Short natural-language description of the dashboard/UI to generate, based on the conversation so far.")]
-        string context,
-        CancellationToken cancellationToken = default)
+    public async Task<A2uiDesignResult> DesignAsync(string context, CancellationToken cancellationToken = default)
     {
         IChatClient secondaryClient = settings.CreateOpenAiClient()
             .GetChatClient(settings.A2uiModel)
@@ -64,7 +55,7 @@ public sealed class A2uiDynamicSchema(Settings settings)
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
-            return new { error = "A2UI design call timed out" };
+            throw new A2uiDesignException("A2UI design call timed out");
         }
 
         var call = response.Messages
@@ -74,25 +65,15 @@ public sealed class A2uiDynamicSchema(Settings settings)
 
         if (call is null)
         {
-            return new { error = "LLM did not call render_a2ui" };
+            throw new A2uiDesignException("LLM did not call render_a2ui");
         }
 
         var args = call.Arguments ?? new Dictionary<string, object?>();
         var surfaceId = args.TryGetValue("surfaceId", out var s) ? s?.ToString() ?? "dynamic-surface" : "dynamic-surface";
         var catalogId = args.TryGetValue("catalogId", out var c) ? c?.ToString() ?? CustomCatalogId : CustomCatalogId;
-        var components = args.TryGetValue("components", out var comp) ? comp : new List<object>();
+        var components = args.TryGetValue("components", out var comp) ? comp ?? new List<object>() : new List<object>();
         var data = args.TryGetValue("data", out var d) ? d : null;
 
-        var ops = new List<object>
-        {
-            A2uiOperations.CreateSurface(surfaceId, catalogId),
-            A2uiOperations.UpdateComponents(surfaceId, components ?? new List<object>()),
-        };
-        if (data is not null)
-        {
-            ops.Add(A2uiOperations.UpdateDataModel(surfaceId, data));
-        }
-
-        return A2uiOperations.Envelope([.. ops]);
+        return new A2uiDesignResult(surfaceId, catalogId, components, data);
     }
 }

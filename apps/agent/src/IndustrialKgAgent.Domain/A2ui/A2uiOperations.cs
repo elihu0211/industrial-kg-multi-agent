@@ -1,4 +1,4 @@
-namespace IndustrialKgAgent.Tools;
+namespace IndustrialKgAgent.Domain.A2ui;
 
 /// <summary>
 /// Framework-agnostic A2UI v0.9 operation builders. The CopilotKit frontend

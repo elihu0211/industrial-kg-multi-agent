@@ -10,7 +10,7 @@
     "dev": "concurrently \"pnpm dev:web\" \"pnpm dev:agent\" --names web,agent --prefix-colors blue,green --kill-others",
     "dev:debug": "LOG_LEVEL=debug pnpm dev",
     "dev:web": "turbo run dev --filter=@ikg/web",
-    "dev:agent": "dotnet watch run --project apps/agent",
+    "dev:agent": "dotnet watch run --project apps/agent/src/IndustrialKgAgent.Host",
     "build": "turbo run build",
     "start": "turbo run start --filter=@ikg/web"
   },

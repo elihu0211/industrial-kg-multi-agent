@@ -1,7 +1,8 @@
 using System.ClientModel;
+using Microsoft.Extensions.Configuration;
 using OpenAI;
 
-namespace IndustrialKgAgent.Config;
+namespace IndustrialKgAgent.Infrastructure.Configuration;
 
 public sealed class Settings
 {

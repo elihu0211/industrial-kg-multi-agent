@@ -1,4 +1,4 @@
-namespace IndustrialKgAgent.Prompts;
+namespace IndustrialKgAgent.Application.Prompts;
 
 public static class SystemPrompt
 {

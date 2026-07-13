@@ -11,7 +11,7 @@ fi
 
 # Start agent via AG-UI protocol
 echo "[entrypoint] Starting agent on port 8123..."
-AGENT_PORT=8123 dotnet ./agent/IndustrialKgAgent.dll 2>&1 &
+AGENT_PORT=8123 dotnet ./agent/IndustrialKgAgent.Host.dll 2>&1 &
 AGENT_PID=$!
 
 sleep 3

@@ -24,13 +24,17 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS agent-build
 
 WORKDIR /src
 
-# Copy only the project file first for a cached restore layer.
-COPY apps/agent/IndustrialKgAgent.csproj ./apps/agent/
-RUN dotnet restore ./apps/agent/IndustrialKgAgent.csproj
+# Copy only the solution + project files first for a cached restore layer.
+COPY apps/agent/IndustrialKgAgent.slnx ./apps/agent/
+COPY apps/agent/src/IndustrialKgAgent.Domain/IndustrialKgAgent.Domain.csproj ./apps/agent/src/IndustrialKgAgent.Domain/
+COPY apps/agent/src/IndustrialKgAgent.Application/IndustrialKgAgent.Application.csproj ./apps/agent/src/IndustrialKgAgent.Application/
+COPY apps/agent/src/IndustrialKgAgent.Infrastructure/IndustrialKgAgent.Infrastructure.csproj ./apps/agent/src/IndustrialKgAgent.Infrastructure/
+COPY apps/agent/src/IndustrialKgAgent.Host/IndustrialKgAgent.Host.csproj ./apps/agent/src/IndustrialKgAgent.Host/
+RUN dotnet restore ./apps/agent/IndustrialKgAgent.slnx
 
 # Copy agent source (after restore, to preserve the cache layer) and publish.
 COPY apps/agent/ ./apps/agent/
-RUN dotnet publish ./apps/agent/IndustrialKgAgent.csproj -c Release -o /app/publish --no-restore
+RUN dotnet publish ./apps/agent/src/IndustrialKgAgent.Host/IndustrialKgAgent.Host.csproj -c Release -o /app/publish --no-restore
 
 # Stage 3: Production image — ASP.NET Core runtime + Node (for the Next.js standalone server)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runner
