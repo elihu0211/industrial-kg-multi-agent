@@ -4,7 +4,7 @@
 
 ## 專案架構
 
-**pnpm + Turborepo monorepo，前端 JS + 後端 .NET**
+**pnpm + Turborepo monorepo，前端 100% TypeScript + 後端 .NET（Clean Architecture）**
 
 - 前端 `apps/web`（Next.js，pnpm workspace 成員）
 - Agent `apps/agent`（.NET 10 + Microsoft Agent Framework，dotnet/NuGet 管理，非 pnpm workspace 成員）
@@ -103,14 +103,17 @@ curl localhost:8123/health   # 應回傳 {"status":"ok"}
 │       ├── IndustrialKgAgent.slnx
 │       └── src/                    # 資料夾用短名，.csproj/assembly/namespace 仍是 IndustrialKgAgent.<Layer>
 │           ├── Domain/             # entities、repository/designer 介面，零套件依賴
+│           │   ├── GlobalUsings.cs
 │           │   ├── Todos/Todo.cs, ITodoStore.cs
 │           │   ├── Flights/Flight.cs, IFlightSchemaProvider.cs
 │           │   ├── Ledger/LedgerRow.cs, ILedgerRepository.cs
 │           │   └── A2ui/A2uiOperations.cs, IA2uiDesigner.cs, ...
 │           ├── Application/        # tool 商業邏輯（只依賴 Domain 介面）
+│           │   ├── GlobalUsings.cs
 │           │   ├── Tools/TodosTool.cs, QueryTool.cs, A2uiFixedSchemaTool.cs, A2uiDynamicSchemaTool.cs
 │           │   └── Prompts/SystemPrompt.cs
 │           ├── Infrastructure/     # 外部串接：實作 Domain 介面
+│           │   ├── GlobalUsings.cs
 │           │   ├── Configuration/Settings.cs
 │           │   ├── Todos/InMemoryTodoStore.cs
 │           │   ├── Ledger/CsvLedgerRepository.cs
@@ -119,14 +122,20 @@ curl localhost:8123/health   # 應回傳 {"status":"ok"}
 │           │   └── Agents/TodosAgent.cs           # 包裝主 agent，橋接 todos 共享狀態
 │           └── Host/               # 入口層／組合根：DI 組裝、AG-UI hosting
 │               ├── Program.cs
+│               ├── Properties/launchSettings.json # dotnet run 預設 Development 環境（啟用 User Secrets）
+│               ├── appsettings.json.example
 │               └── Data/
 │                   ├── db.csv
 │                   └── flight_schema.json
 ├── Dockerfile                   # 單一映像部署（web + agent）
+├── entrypoint.sh                 # 單一映像啟動腳本
+├── package.json                  # root scripts（pnpm + turbo + concurrently）
 ├── pnpm-workspace.yaml
 ├── pnpm-lock.yaml
 ├── turbo.json
 ├── renovate.json
+├── AGENTS.md                     # 跨工具 AI agent 共用規則（Git 工作流程等）
+├── CLAUDE.md                     # Claude Code 專用，內容為 @AGENTS.md
 └── .env.example
 ```
 
