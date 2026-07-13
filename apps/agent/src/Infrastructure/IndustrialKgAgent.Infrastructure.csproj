@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\IndustrialKgAgent.Domain\IndustrialKgAgent.Domain.csproj" />
+    <ProjectReference Include="..\Domain\IndustrialKgAgent.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

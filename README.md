@@ -83,23 +83,23 @@ pnpm dev
 │   │   └── package.json
 │   └── agent/                   # .NET Microsoft Agent Framework agent（Clean Architecture）
 │       ├── IndustrialKgAgent.slnx
-│       └── src/
-│           ├── IndustrialKgAgent.Domain/          # entities、repository/designer 介面，零套件依賴
+│       └── src/                    # 資料夾用短名，.csproj/assembly/namespace 仍是 IndustrialKgAgent.<Layer>
+│           ├── Domain/             # entities、repository/designer 介面，零套件依賴
 │           │   ├── Todos/Todo.cs, ITodoStore.cs
 │           │   ├── Flights/Flight.cs, IFlightSchemaProvider.cs
 │           │   ├── Ledger/LedgerRow.cs, ILedgerRepository.cs
 │           │   └── A2ui/A2uiOperations.cs, IA2uiDesigner.cs, ...
-│           ├── IndustrialKgAgent.Application/     # tool 商業邏輯（只依賴 Domain 介面）
+│           ├── Application/        # tool 商業邏輯（只依賴 Domain 介面）
 │           │   ├── Tools/TodosTool.cs, QueryTool.cs, A2uiFixedSchemaTool.cs, A2uiDynamicSchemaTool.cs
 │           │   └── Prompts/SystemPrompt.cs
-│           ├── IndustrialKgAgent.Infrastructure/  # 外部串接：實作 Domain 介面
+│           ├── Infrastructure/     # 外部串接：實作 Domain 介面
 │           │   ├── Configuration/Settings.cs
 │           │   ├── Todos/InMemoryTodoStore.cs
 │           │   ├── Ledger/CsvLedgerRepository.cs
 │           │   ├── Flights/JsonFlightSchemaProvider.cs
 │           │   ├── Ai/OpenAiA2uiDesigner.cs
 │           │   └── Agents/TodosAgent.cs           # 包裝主 agent，橋接 todos 共享狀態
-│           └── IndustrialKgAgent.Host/            # 入口層／組合根：DI 組裝、AG-UI hosting
+│           └── Host/               # 入口層／組合根：DI 組裝、AG-UI hosting
 │               ├── Program.cs
 │               └── Data/
 │                   ├── db.csv
@@ -120,7 +120,7 @@ pnpm dev
 
 1. **Catalog** — 前端定義元件 schema 與 React renderer，透過 `layout.tsx` 的 `<CopilotKitProvider>` 一次性註冊
 2. **Surface** — agent 建立 surface、設定元件、綁定資料
-3. **Operations** — agent tool 回傳 `{"a2ui_operations": [...]}` JSON envelope（`IndustrialKgAgent.Domain/A2ui/A2uiOperations.cs`），CopilotKit runtime 偵測後即時渲染到前端
+3. **Operations** — agent tool 回傳 `{"a2ui_operations": [...]}` JSON envelope（`apps/agent/src/Domain/A2ui/A2uiOperations.cs`），CopilotKit runtime 偵測後即時渲染到前端
 
 ### 兩種模式
 
@@ -136,9 +136,9 @@ pnpm dev
 | Catalog 定義（Zod schema） | `apps/web/src/app/declarative-generative-ui/definitions.ts` |
 | Catalog renderer（React） | `apps/web/src/app/declarative-generative-ui/renderers.tsx` |
 | Catalog 註冊 | `apps/web/src/app/layout.tsx` |
-| 固定 schema agent tool | `apps/agent/src/IndustrialKgAgent.Application/Tools/A2uiFixedSchemaTool.cs` |
-| 動態 schema agent tool | `apps/agent/src/IndustrialKgAgent.Application/Tools/A2uiDynamicSchemaTool.cs` |
-| 航班 schema JSON | `apps/agent/src/IndustrialKgAgent.Host/Data/flight_schema.json` |
+| 固定 schema agent tool | `apps/agent/src/Application/Tools/A2uiFixedSchemaTool.cs` |
+| 動態 schema agent tool | `apps/agent/src/Application/Tools/A2uiDynamicSchemaTool.cs` |
+| 航班 schema JSON | `apps/agent/src/Host/Data/flight_schema.json` |
 
 ### 新增自訂元件
 
