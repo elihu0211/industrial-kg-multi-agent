@@ -87,6 +87,7 @@ curl localhost:8123/health   # 應回傳 {"status":"ok"}
 | `pnpm dev:debug` | 啟動開發伺服器並開啟 debug 日誌 |
 | `pnpm dev:web` | 僅啟動 Next.js 前端（Turborepo） |
 | `pnpm dev:agent` | 僅啟動 .NET agent（`dotnet watch run`，含 hot reload） |
+| `pnpm lint` | 對 web 前端跑 ESLint |
 | `pnpm build` | 建置前端供正式環境使用（Turborepo） |
 | `pnpm start` | 啟動正式環境 web server |
 

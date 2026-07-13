@@ -38,22 +38,18 @@ function DonutChart({
   const total = data.reduce((sum, d) => sum + (Number(d.value) || 0), 0);
 
   // Calculate each slice's arc length and starting position
-  let accumulated = 0;
-  const slices = data.map((item, index) => {
-    const val = Number(item.value) || 0;
-    const ratio = total > 0 ? val / total : 0;
-    const arc = ratio * circumference;
-    const startAt = accumulated;
-    accumulated += arc;
-    return {
-      ...item,
-      arc,
-      gap: circumference - arc,
-      // Negative dashoffset shifts the dash forward (clockwise) to the correct position
-      dashoffset: -startAt,
-      color: CHART_COLORS[index % CHART_COLORS.length],
-    };
-  });
+  const arcs = data.map(
+    (item) => (total > 0 ? (Number(item.value) || 0) / total : 0) * circumference,
+  );
+  const slices = data.map((item, index) => ({
+    ...item,
+    arc: arcs[index],
+    gap: circumference - arcs[index],
+    // Negative dashoffset shifts the dash forward (clockwise) to the correct
+    // position; the offset is the sum of every preceding slice's arc length.
+    dashoffset: -arcs.slice(0, index).reduce((sum, arc) => sum + arc, 0),
+    color: CHART_COLORS[index % CHART_COLORS.length],
+  }));
 
   return (
     <svg

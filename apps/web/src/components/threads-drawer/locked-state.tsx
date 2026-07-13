@@ -12,12 +12,22 @@ import {
 import { Button } from "@/components/ui/button";
 import styles from "./threads-drawer.module.css";
 
+const subscribeNever = () => () => {};
+const getSnapshotClient = () => true;
+const getSnapshotServer = () => false;
+
 export function ThreadsPanelGate({ children }: { children: React.ReactNode }) {
   // The Threads drawer reads a client-only external store (useThreads /
   // useSyncExternalStore) with no server snapshot, so it must not render during
-  // SSR/prerender — Next would fail to prerender "/". Defer to client mount.
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
+  // SSR/prerender — Next would fail to prerender "/". Defer to client mount —
+  // useSyncExternalStore is the React-documented way to detect this without an
+  // effect+setState round trip (see e.g. https://tanstack.com/query/latest 's
+  // own useIsClient / usehooks-ts' useIsMounted for the same pattern).
+  const mounted = React.useSyncExternalStore(
+    subscribeNever,
+    getSnapshotClient,
+    getSnapshotServer,
+  );
 
   if (process.env.NEXT_PUBLIC_COPILOTKIT_THREADS_ENABLED === "true") {
     if (!mounted) {
