@@ -19,6 +19,13 @@
 
 ## 快速開始
 
+**0. 取得原始碼**
+
+```bash
+git clone <repo-url> industrial-kg-multi-agent
+cd industrial-kg-multi-agent
+```
+
 **1. 安裝依賴**
 
 ```bash
@@ -27,27 +34,45 @@ pnpm install
 
 安裝 web workspace 依賴。`dotnet run`/`dotnet watch run` 會在第一次啟動 agent 時自動還原 NuGet 套件，不需要額外安裝步驟。
 
-**2. 設定環境變數**
+**2. 設定 agent 的 OpenAI 金鑰（必要）**
+
+⚠️ 根目錄的 `.env` **不會**被 .NET agent 讀取——.NET 沒有內建 `.env` 支援，`dotnet run`/`dotnet watch run` 也不會自動載入它。agent 讀的是 ASP.NET Core 標準的設定來源（User Secrets / `appsettings.json` / 真正的環境變數），擇一即可：
+
+```bash
+cd apps/agent/src/Host
+dotnet user-secrets set "OPENAI_API_KEY" "sk-..."
+dotnet user-secrets set "LLM_MODEL" "gpt-4.1"
+dotnet user-secrets set "A2UI_MODEL" "gpt-4.1"
+cd ../../../..
+```
+
+（User Secrets 存在專案外的使用者設定檔，不會進 git。三個變數皆為必填，缺一 agent 會直接丟例外拒絕啟動。）
+
+或者複製 `apps/agent/src/Host/appsettings.json.example` 為 `appsettings.json`（同目錄，已在 `.gitignore` 排除）並填入對應值，效果相同。
+
+**3. 設定 web 前端的環境變數（選用）**
 
 ```bash
 cp .env.example .env
 ```
 
-至少填入：
+`.env` 只影響 web 前端的可選整合（CopilotKit Threads、自訂 MCP server、agent URL 覆寫等），有合理預設值，跳過此步驟 demo 也能正常跑。詳見 `.env.example` 內註解。
 
-```bash
-OPENAI_API_KEY=sk-...
-```
-
-其他選項（agent URL、Threads 等）詳見 `.env.example`。
-
-**3. 啟動開發伺服器**
+**4. 啟動開發伺服器**
 
 ```bash
 pnpm dev
 ```
 
 同時啟動 web UI（port 3000）與 .NET agent（port 8123）。
+
+**5. 驗證**
+
+```bash
+curl localhost:8123/health   # 應回傳 {"status":"ok"}
+```
+
+瀏覽器打開 [http://localhost:3000](http://localhost:3000)，應能看到聊天介面並正常對話（若 agent 連線失敗見下方〈疑難排解〉）。
 
 ## 可用指令
 
@@ -168,7 +193,7 @@ pnpm dev
 出現「I'm having trouble connecting to my tools」時：
 
 1. 確認 .NET agent 正在 port 8123 執行（`curl localhost:8123/health`）
-2. 確認 `OPENAI_API_KEY`、`LLM_MODEL`、`A2UI_MODEL` 已正確設定
+2. 確認 `OPENAI_API_KEY`、`LLM_MODEL`、`A2UI_MODEL` 已透過 `dotnet user-secrets`（或 `appsettings.json`）正確設定——`cd apps/agent/src/Host && dotnet user-secrets list` 可檢查目前值；缺任一個 agent 啟動時就會直接拋例外並印出缺哪個變數
 3. 確認兩個 server 均已成功啟動
 
 ### .NET 依賴問題
