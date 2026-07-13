@@ -19,13 +19,6 @@
 
 ## 快速開始
 
-**0. 取得原始碼**
-
-```bash
-git clone <repo-url> industrial-kg-multi-agent
-cd industrial-kg-multi-agent
-```
-
 **1. 安裝依賴**
 
 ```bash
