@@ -6,14 +6,13 @@ using IndustrialKgAgent.Infrastructure.Configuration;
 namespace IndustrialKgAgent.Infrastructure.Ai;
 
 /// <summary>
-/// Designs A2UI surfaces via a secondary, independently-configured LLM (A2UI_MODEL)
-/// that responds with a forced single tool call.
+/// 透過另一個獨立設定的次要 LLM（A2UI_MODEL）設計 A2UI surface，
+/// 該 LLM 會被強制以單一 tool call 回應。
 ///
-/// Unlike the Python version (which read raw conversation history server-side via
-/// a framework-injected ToolRuntime), the description comes in as a normal tool
-/// argument — matching CopilotKit's own official .NET reference
-/// (DeclarativeGenUiAgent) for this exact pattern. MSAF tool delegates have no
-/// ambient access to conversation history, so this is the idiomatic way to do it.
+/// 不同於 Python 版本（在伺服器端透過框架注入的 ToolRuntime 讀取原始對話歷史），
+/// 這裡的描述是以一般 tool 參數的形式傳入——這與 CopilotKit 官方 .NET 參考實作
+/// （DeclarativeGenUiAgent）處理同樣情境的做法一致。MSAF 的 tool delegate
+/// 沒有隱式存取對話歷史的管道，所以這是慣用的做法。
 /// </summary>
 public sealed class OpenAiA2uiDesigner(Settings settings) : IA2uiDesigner
 {
@@ -33,10 +32,10 @@ public sealed class OpenAiA2uiDesigner(Settings settings) : IA2uiDesigner
             .GetChatClient(settings.A2uiModel)
             .AsIChatClient();
 
-        // Some OpenAI-compatible gateways/models hang indefinitely on a forced tool_choice
-        // (verified directly against this app's own gateway — a raw HTTP request with no
-        // .NET code involved hangs the same way), so this call gets its own timeout rather
-        // than trusting the upstream provider to ever respond.
+        // 部分相容 OpenAI 介面的 gateway/模型在強制 tool_choice 時會無限期 hang 住
+        // （已直接對這個 app 使用的 gateway 驗證過——即使不經過任何 .NET 程式碼、
+        // 純發一個原始 HTTP request 也會一樣 hang 住），所以這裡的呼叫要自己設定
+        // 逾時，不能信任上游 provider 一定會回應。
         using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeoutCts.CancelAfter(TimeSpan.FromSeconds(30));
 

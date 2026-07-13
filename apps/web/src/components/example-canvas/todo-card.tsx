@@ -84,7 +84,7 @@ export function TodoCard({
         isCompleted && "opacity-60",
       )}
     >
-      {/* Delete — top right on hover */}
+      {/* 刪除按鈕——hover 時顯示於右上角 */}
       <Button
         variant="ghost"
         size="icon"
@@ -95,14 +95,14 @@ export function TodoCard({
         <X className="h-3.5 w-3.5" />
       </Button>
 
-      {/* Emoji avatar */}
+      {/* Emoji 頭像 */}
       <div className="relative inline-block mb-3">
         <button
           type="button"
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}
           className={cn(
             "block text-3xl leading-none cursor-pointer rounded-xl p-2 transition-colors",
-            isCompleted ? "bg-[var(--muted)]" : "bg-[var(--secondary)]",
+            isCompleted ? "bg-(--muted)" : "bg-(--secondary)",
           )}
           aria-label="Change emoji"
         >
@@ -110,7 +110,7 @@ export function TodoCard({
         </button>
 
         {showEmojiPicker && (
-          <div className="absolute top-0 left-full ml-2 z-10 flex gap-1 p-1.5 rounded-full bg-[var(--card)] border border-[var(--border)] shadow-lg">
+          <div className="absolute top-0 left-full ml-2 z-10 flex gap-1 p-1.5 rounded-full bg-(--card) border border-(--border) shadow-lg">
             {EMOJI_OPTIONS.map((emoji) => (
               <button
                 type="button"
@@ -119,7 +119,7 @@ export function TodoCard({
                   onUpdateEmoji(todo.id, emoji);
                   setShowEmojiPicker(false);
                 }}
-                className="text-lg w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-colors hover:bg-[var(--secondary)]"
+                className="text-lg w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-colors hover:bg-(--secondary)"
               >
                 {emoji}
               </button>
@@ -128,7 +128,7 @@ export function TodoCard({
         )}
       </div>
 
-      {/* Title */}
+      {/* 標題 */}
       <div className="flex items-start gap-3">
         <Checkbox
           checked={isCompleted}
@@ -147,7 +147,7 @@ export function TodoCard({
                 if (e.key === "Enter") saveEdit("title");
                 if (e.key === "Escape") cancelEdit();
               }}
-              className="w-full text-base font-semibold focus:outline-none bg-transparent text-[var(--foreground)] border-b-2 border-[var(--primary)] pb-[2px]"
+              className="w-full text-base font-semibold focus:outline-none bg-transparent text-(--foreground) border-b-2 border-(--primary) pb-[2px]"
               autoFocus
               aria-label="Edit todo title"
             />
@@ -156,10 +156,10 @@ export function TodoCard({
               type="button"
               onClick={() => startEdit("title")}
               className={cn(
-                "block w-full text-left text-base font-semibold cursor-text break-words leading-snug",
+                "block w-full text-left text-base font-semibold cursor-text wrap-break-word leading-snug",
                 isCompleted
-                  ? "text-[var(--muted-foreground)] line-through"
-                  : "text-[var(--foreground)]",
+                  ? "text-(--muted-foreground) line-through"
+                  : "text-(--foreground)",
               )}
             >
               {todo.title}
@@ -175,7 +175,7 @@ export function TodoCard({
               onKeyDown={(e) => {
                 if (e.key === "Escape") cancelEdit();
               }}
-              className="w-full mt-1.5 text-sm leading-relaxed focus:outline-none resize-none bg-transparent text-[var(--muted-foreground)] border-b-2 border-[var(--primary)] pb-[2px]"
+              className="w-full mt-1.5 text-sm leading-relaxed focus:outline-none resize-none bg-transparent text-(--muted-foreground) border-b-2 border-(--primary) pb-[2px]"
               rows={1}
               autoFocus
               aria-label="Edit todo description"
@@ -187,8 +187,8 @@ export function TodoCard({
               className={cn(
                 "block w-full text-left mt-1.5 text-sm leading-relaxed cursor-text",
                 isCompleted
-                  ? "text-[var(--muted-foreground)] line-through"
-                  : "text-[var(--muted-foreground)]",
+                  ? "text-(--muted-foreground) line-through"
+                  : "text-(--muted-foreground)",
               )}
             >
               {truncatedDescription}

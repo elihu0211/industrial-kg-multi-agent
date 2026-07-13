@@ -5,19 +5,18 @@ using IndustrialKgAgent.Domain.Todos;
 namespace IndustrialKgAgent.Infrastructure.Agents;
 
 /// <summary>
-/// Wraps the chat agent to bridge <c>manage_todos</c>/<c>get_todos</c> to AG-UI shared
-/// state. MSAF has no LangGraph-style app state schema, so this reads the client-echoed
-/// state in, seeds <see cref="ITodoStore"/> for the tool calls to read/write,
-/// and emits a post-turn snapshot out — matching the pattern CopilotKit's own
-/// SharedStateReadWriteAgent uses for the same problem.
+/// 包裝 chat agent，將 <c>manage_todos</c>/<c>get_todos</c> 橋接到 AG-UI 的共享
+/// 狀態。MSAF 沒有 LangGraph 那種 app state schema，所以這裡把 client 回傳的
+/// 狀態讀進來，餵給 <see cref="ITodoStore"/> 供 tool call 讀寫，並在結束時送出
+/// 一份 turn 結束後的快照——這與 CopilotKit 自家 SharedStateReadWriteAgent
+/// 處理同樣問題的模式一致。
 ///
-/// Known gaps (see PR description):
-/// - Unlike the Python/LangGraph version, this only snapshots after the full turn
-///   completes — MSAF's AG-UI package does not support mid-generation
-///   predictive/token-by-token state streaming today.
-/// - <see cref="ITodoStore"/>'s default (<c>InMemoryTodoStore</c>) implementation is a
-///   single global slot, not per-conversation (see that class's comment for why
-///   AsyncLocal doesn't work here).
+/// 已知落差（詳見 PR 說明）：
+/// - 不同於 Python/LangGraph 版本，這裡只在整個 turn 結束後才拍快照——
+///   MSAF 的 AG-UI 套件目前不支援生成過程中逐 token 的預測性狀態串流。
+/// - <see cref="ITodoStore"/> 的預設實作（<c>InMemoryTodoStore</c>）是單一全域
+///   槽位，並非依對話區分（原因請見該類別的註解，說明為何 AsyncLocal
+///   在這裡行不通）。
 /// </summary>
 public sealed class TodosAgent(AIAgent innerAgent, ITodoStore todoStore) : DelegatingAIAgent(innerAgent)
 {
@@ -36,9 +35,9 @@ public sealed class TodosAgent(AIAgent innerAgent, ITodoStore todoStore) : Deleg
     {
         todoStore.Save(ReadInboundTodos(options));
 
-        // Must call the public RunStreamingAsync, not the protected RunCoreStreamingAsync:
-        // InnerAgent is statically typed as AIAgent, and C# only allows a protected member
-        // through a same-or-derived-type reference, not an arbitrary base-typed one (CS1540).
+        // 必須呼叫 public 的 RunStreamingAsync，不能呼叫 protected 的 RunCoreStreamingAsync：
+        // InnerAgent 的靜態型別是 AIAgent，而 C# 只允許透過同型別或衍生型別的參考
+        // 存取 protected 成員，不能透過任意的基底型別參考（CS1540）。
         await foreach (var update in InnerAgent.RunStreamingAsync(messages, session, options, cancellationToken)
                            .ConfigureAwait(false))
         {

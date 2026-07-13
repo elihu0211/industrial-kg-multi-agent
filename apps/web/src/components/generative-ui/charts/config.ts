@@ -1,5 +1,5 @@
 /**
- * CopilotKit brand chart palette — Plus Jakarta Sans / brand color system.
+ * CopilotKit 品牌圖表色票——Plus Jakarta Sans / 品牌色彩系統。
  */
 export const CHART_COLORS = [
   "#BEC2FF", // lilac-400

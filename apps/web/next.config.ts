@@ -3,25 +3,25 @@ import path from "node:path";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  // In a pnpm monorepo the app lives in apps/web; point file tracing at the
-  // workspace root so the standalone build bundles hoisted node_modules.
+  // pnpm monorepo 中這個 app 位於 apps/web；file tracing 要指到 workspace
+  // 根目錄，standalone build 才能把 hoisted 的 node_modules 一併打包進去。
   outputFileTracingRoot: path.join(__dirname, "../../"),
   serverExternalPackages: ["@copilotkit/runtime"],
   env: {
-    // The public Threads UI flag is DERIVED from the server-side license token.
-    // Set COPILOTKIT_LICENSE_TOKEN (only) to enable Threads — do not set this flag
-    // directly. NOTE: NEXT_PUBLIC_* resolves at BUILD time while the runtime reads
-    // the token per-request, so the UI gate and runtime agree only when the token is
-    // present at build time (the standard `next dev` / host-build flow). For a
-    // standalone/Docker image built without the token and injected at runtime, set
-    // COPILOTKIT_LICENSE_TOKEN at build time too (or gate the UI at runtime) so the
-    // baked flag reflects it.
+    // 公開的 Threads UI flag 是「衍生」自伺服器端的 license token。
+    // 只要設定 COPILOTKIT_LICENSE_TOKEN 就能啟用 Threads——不要直接設定這個 flag。
+    // 注意：NEXT_PUBLIC_* 是在「建置時」就決定值，但 runtime 是「每個請求」才讀
+    // token，所以 UI 開關與 runtime 的判斷只有在建置時就存在 token 的情況下
+    // （標準的 `next dev` / host-build 流程）才會一致。如果是建置時沒有 token、
+    // 而是在部署時才注入的 standalone/Docker image，記得建置時也要一併設定
+    // COPILOTKIT_LICENSE_TOKEN（或改成在 runtime 判斷），讓打包進去的 flag
+    // 與實際狀態相符。
     NEXT_PUBLIC_COPILOTKIT_THREADS_ENABLED: process.env.COPILOTKIT_LICENSE_TOKEN
       ? "true"
       : "false",
   },
   typescript: {
-    // Docker route override uses HttpAgent which has a type mismatch with CopilotRuntime
+    // Docker route override 使用的 HttpAgent 與 CopilotRuntime 有型別不匹配的問題
     ignoreBuildErrors: true,
   },
 };

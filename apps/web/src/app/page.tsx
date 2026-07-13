@@ -32,13 +32,12 @@ export default function HomePage() {
       </ThreadsPanelGate>
       <div className={styles.mainPanel}>
         {/*
-          Wrap both the chat and the canvas in one CopilotChatConfigurationProvider
-          so they share the active threadId. `useAgent()` falls back to the
-          provider's threadId when called without an explicit one, which makes
-          the canvas read from the same per-thread agent clone that the chat's
-          /connect replay populates. Without this wrapper, the canvas resolves
-          to the registry agent and never receives STATE_SNAPSHOT events on
-          thread resume.
+          用同一個 CopilotChatConfigurationProvider 包住 chat 與 canvas，
+          讓兩者共用目前的 threadId。`useAgent()` 在沒有明確指定 threadId 時
+          會退回使用 provider 的 threadId，這樣 canvas 才能讀到與 chat 的
+          /connect replay 所填入的同一個 per-thread agent clone。少了這層
+          包裝，canvas 會改用 registry agent，在恢復對話時就收不到
+          STATE_SNAPSHOT 事件。
         */}
         <CopilotChatConfigurationProvider agentId="default" threadId={threadId}>
           <ExampleLayout
