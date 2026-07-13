@@ -1,9 +1,7 @@
 {
   "$schema": "./node_modules/turbo/schema.json",
-  "globalDependencies": ["pnpm-lock.yaml", ".env"],
+  "globalDependencies": ["pnpm-lock.yaml"],
   "globalEnv": [
-    "OPENAI_API_KEY",
-    "ANTHROPIC_API_KEY",
     "AGENT_URL",
     "COPILOTKIT_LICENSE_TOKEN",
     "INTELLIGENCE_API_KEY",
