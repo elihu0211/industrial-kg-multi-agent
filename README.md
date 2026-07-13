@@ -29,7 +29,7 @@ pnpm install
 
 **2. 設定 agent 的 OpenAI 金鑰（必要）**
 
-⚠️ 根目錄的 `.env` **不會**被 .NET agent 讀取——.NET 沒有內建 `.env` 支援，`dotnet run`/`dotnet watch run` 也不會自動載入它。agent 讀的是 ASP.NET Core 標準的設定來源（User Secrets / `appsettings.json` / 真正的環境變數），擇一即可：
+agent 讀的是 ASP.NET Core 標準的設定來源（User Secrets / `appsettings.json` / 環境變數），擇一即可：
 
 ```bash
 cd apps/agent/src/Host
