@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useState } from "react";
+import Image from "next/image";
 import { ModeToggle } from "./mode-toggle";
 import { useFrontendTool } from "@copilotkit/react-core/v2";
 
@@ -50,10 +51,12 @@ export function ExampleLayout({ chatContent, appContent }: ExampleLayoutProps) {
           <span className="font-extrabold text-2xl pb-1.5 max-lg:pb-0">
             CopilotKit
           </span>
-          <img
+          <Image
             src="/copilotkit-logo-mark.svg"
             alt="CopilotKit"
-            className="h-7"
+            width={26}
+            height={28}
+            className="h-7 w-auto"
           />
         </div>
         <div className="flex-1 min-h-0 overflow-y-auto">{chatContent}</div>
