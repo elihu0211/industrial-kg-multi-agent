@@ -1,0 +1,6 @@
+{
+  "type": "test-schema",
+  "components": [
+    { "type": "card", "bind": "flights" }
+  ]
+}
