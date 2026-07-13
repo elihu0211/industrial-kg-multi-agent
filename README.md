@@ -49,7 +49,17 @@ cd ../../../..
 cp apps/web/.env.example apps/web/.env
 ```
 
-`.env` 放在 `apps/web/` 底下（Next.js 只會讀自己專案目錄裡的 `.env*`，不會往上找 monorepo 根目錄——放根目錄的話 Next.js 實際上讀不到，這也是 [Turborepo 官方文件](https://turborepo.com/docs/crafting-your-repository/using-environment-variables) 建議不要用共用根目錄 `.env` 的原因）。這份 `.env` 只影響 web 前端的可選整合（CopilotKit Threads、自訂 MCP server、agent URL 覆寫等），有合理預設值，跳過此步驟 demo 也能正常跑。詳見 `apps/web/.env.example` 內註解。
+大多數情況可以跳過這步——`apps/web/.env.example` 裡的變數都有預設值可退回去（例如 `AGENT_URL` 沒設定就用 `http://localhost:8123`），demo 照樣能跑。只有想啟用下列選用功能時才需要複製並填值：
+
+| 想要的功能 | 要設定的變數 |
+|------|------|
+| agent 不是跑在預設的 `localhost:8123`（換了 port，或連到遠端 agent） | `AGENT_URL` |
+| 啟用 CopilotKit Threads 多對話側邊欄 | `COPILOTKIT_LICENSE_TOKEN`（連同 `NEXT_PUBLIC_COPILOTKIT_THREADS_ENABLED=true` 及對應的 `INTELLIGENCE_*` 三個變數） |
+| 換掉預設的 MCP server（demo 預設用 Excalidraw 的公開 MCP） | `MCP_SERVER_URL` |
+
+複製出 `apps/web/.env` 後，把對應的那幾行取消註解、填上實際值即可，其他保持原樣。
+
+**為什麼放在 `apps/web/` 而不是 repo 根目錄**：Next.js 的 `.env*` 載入機制（`@next/env`）只讀「自己專案目錄」裡的檔案，不會往上找 monorepo 根目錄——如果放根目錄，Next.js 實際上完全讀不到（已實測驗證：dev server 啟動 log 只有 `.env` 放在 `apps/web/` 時才會印出 `- Environments: .env`）。這也是 [Turborepo 官方文件](https://turborepo.com/docs/crafting-your-repository/using-environment-variables) 明確建議的做法——monorepo 不要用共用根目錄 `.env`，改放進實際使用它的 package 裡。
 
 **4. 啟動開發伺服器**
 
