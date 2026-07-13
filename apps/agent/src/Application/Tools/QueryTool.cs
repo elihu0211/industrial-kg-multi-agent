@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using IndustrialKgAgent.Domain.Ledger;
 
 namespace IndustrialKgAgent.Application.Tools;

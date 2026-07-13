@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using Microsoft.Extensions.AI;
 using OpenAI.Chat;
 using IndustrialKgAgent.Domain.A2ui;
 using IndustrialKgAgent.Infrastructure.Configuration;

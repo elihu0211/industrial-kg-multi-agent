@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace IndustrialKgAgent.Domain.Flights;
 
 public sealed class Flight

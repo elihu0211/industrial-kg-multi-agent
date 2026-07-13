@@ -1,4 +1,3 @@
-using System.Text.Json;
 using IndustrialKgAgent.Domain.Flights;
 
 namespace IndustrialKgAgent.Infrastructure.Flights;

@@ -1,7 +1,5 @@
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 using Microsoft.Agents.AI;
-using Microsoft.Extensions.AI;
 using IndustrialKgAgent.Domain.Todos;
 
 namespace IndustrialKgAgent.Infrastructure.Agents;

@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using IndustrialKgAgent.Domain.A2ui;
 
 namespace IndustrialKgAgent.Application.Tools;
