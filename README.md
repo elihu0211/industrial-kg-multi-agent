@@ -29,7 +29,7 @@ pnpm install
 
 **2. 設定 agent 的 OpenAI 金鑰（必要）**
 
-agent 讀的是 ASP.NET Core 標準的設定來源（User Secrets / `appsettings.json` / 環境變數），擇一即可：
+agent 讀的是 ASP.NET Core 標準的設定來源（User Secrets / `appsettings.json`），擇一即可：
 
 ```bash
 cd apps/agent/src/Host
