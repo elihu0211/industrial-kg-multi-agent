@@ -1,62 +1,47 @@
 /**
  * A2UI Catalog — React Renderers
  *
- * Each renderer maps a component name from definitions.ts to a React
- * implementation. Props are type-checked against the Zod schemas.
+ * 每個 renderer 都將 definitions.ts 中的 component 名稱對應到一個 React
+ * 實作。Props 會依 Zod schema 做型別檢查。
  *
- * To add a component: define its schema in definitions.ts, then add a
- * renderer here. See README.md "Adding a custom component" for details.
+ * 新增元件的方式：先在 definitions.ts 定義 schema，再到這裡加上對應的
+ * renderer。詳見 README.md 的「Adding a custom component」章節。
  *
- * The assembled catalog is registered in layout.tsx via
- * <CopilotKit a2ui={{ catalog: demonstrationCatalog }}>.
+ * 組裝完成的 catalog 會透過 layout.tsx 裡的
+ * <CopilotKit a2ui={{ catalog: demonstrationCatalog }}> 註冊。
  */
 "use client";
 
 import React, { useState } from "react";
-import {
-  PieChart as RechartsPie,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  BarChart as RechartsBar,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-} from "recharts";
+import dynamic from "next/dynamic";
 import { createCatalog } from "@copilotkit/a2ui-renderer";
 import type { CatalogRenderers } from "@copilotkit/a2ui-renderer";
 import { demonstrationCatalogDefinitions } from "./definitions";
 import type { DemonstrationCatalogDefinitions } from "./definitions";
+import styles from "./renderers.module.css";
+import { c } from "./theme-colors";
 
-// Row/Column's `children` prop is declared in the Zod schema as `string[] |
-// { componentId, path }` (see definitions.ts), but GenericBinder resolves
-// the structural `{ componentId, path }` form into an array of
-// `{ id, basePath }` template-child descriptors before the renderer ever
-// sees it — a runtime shape the static Zod type doesn't capture.
+const DonutPieChart = dynamic(() => import("./donut-pie-chart"), {
+  ssr: false,
+});
+const RenderersBarChart = dynamic(() => import("./renderers-bar-chart"), {
+  ssr: false,
+});
+
+// Row/Column 的 `children` prop 在 Zod schema 中宣告為 `string[] |
+// { componentId, path }`（見 definitions.ts），但 GenericBinder 會在
+// renderer 拿到之前，把結構性的 `{ componentId, path }` 形式解析成一組
+// `{ id, basePath }` 的 template-child descriptor——這是靜態 Zod 型別
+// 無法表達的 runtime 形狀。
 type LayoutChildItem = string | { id: string; basePath?: string };
 
-// Same story: `children` render-prop is typed as `(componentId: string) =>
-// ReactNode`, but structural/template children additionally pass a
-// `basePath` so each repeated instance binds to its own data-model slice.
+// 同樣的情況：`children` 這個 render-prop 的型別是 `(componentId: string) =>
+// ReactNode`，但結構性/模板 children 還會額外帶入 `basePath`，讓每個
+// 重複的實例各自綁定到自己的 data-model 片段。
 type LayoutChildrenRenderer = (
   componentId: string,
   basePath?: string,
 ) => React.ReactNode;
-
-// ─── Theme-aware colors ─────────────────────────────────────────────
-
-const c = {
-  card: "var(--card)",
-  cardFg: "var(--card-foreground)",
-  border: "var(--border)",
-  muted: "var(--muted-foreground)",
-  divider: "color-mix(in srgb, var(--border) 50%, var(--card))",
-  shadow: "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)",
-  btnBg: "color-mix(in srgb, var(--muted) 40%, var(--card))",
-  btnDoneBg: "color-mix(in srgb, #22c55e 10%, var(--card))",
-};
 
 function ActionButton({
   label,
@@ -74,22 +59,7 @@ function ActionButton({
     <button
       type="button"
       disabled={done}
-      style={{
-        width: "100%",
-        padding: "10px 16px",
-        borderRadius: "10px",
-        border: done ? "1px solid #bbf7d0" : `1px solid ${c.border}`,
-        background: done ? c.btnDoneBg : c.btnBg,
-        color: done ? "#059669" : c.cardFg,
-        fontSize: "0.85rem",
-        fontWeight: 500,
-        cursor: done ? "default" : "pointer",
-        transition: "background 0.2s ease, border-color 0.2s ease, color 0.2s ease",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "6px",
-      }}
+      className={styles.actionButton}
       onClick={() => {
         if (!done) {
           action?.();
@@ -116,7 +86,7 @@ function ActionButton({
   );
 }
 
-// ─── Renderers (type-checked against schema definitions) ────────────
+// ─── Renderer（依 schema 定義做型別檢查）────────────
 
 const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefinitions> =
   {
@@ -143,8 +113,8 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
       );
     },
 
-    // Text: removed — use the basic catalog's Text (supports DynamicStringSchema
-    // for path bindings in fixed-schema templates).
+    // Text：已移除——請改用 basic catalog 的 Text（支援 DynamicStringSchema，
+    // 可在 fixed-schema template 中做 path binding）。
 
     Row: ({ props, children }) => {
       const justifyMap: Record<string, string> = {
@@ -170,20 +140,17 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
             width: "100%",
           }}
         >
-          {items.map((item, i) => {
+          {items.map((item) => {
             if (typeof item === "string")
               return (
-                <div
-                  key={`${item}-${i}`}
-                  style={{ flex: "1 1 0", minWidth: 0 }}
-                >
+                <div key={item} style={{ flex: "1 1 0", minWidth: 0 }}>
                   {renderChild(item)}
                 </div>
               );
             if (item && typeof item === "object" && "id" in item)
               return (
                 <div
-                  key={`${item.id}-${i}`}
+                  key={item.basePath ? `${item.id}:${item.basePath}` : item.id}
                   style={{ flex: "1 1 0", minWidth: 0 }}
                 >
                   {renderChild(item.id, item.basePath)}
@@ -209,16 +176,18 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
             width: "100%",
           }}
         >
-          {items.map((item, i) => {
+          {items.map((item) => {
             if (typeof item === "string")
               return (
-                <React.Fragment key={`${item}-${i}`}>
+                <React.Fragment key={item}>
                   {renderChild(item)}
                 </React.Fragment>
               );
             if (item && typeof item === "object" && "id" in item)
               return (
-                <React.Fragment key={`${item.id}-${i}`}>
+                <React.Fragment
+                  key={item.basePath ? `${item.id}:${item.basePath}` : item.id}
+                >
                   {renderChild(item.id, item.basePath)}
                 </React.Fragment>
               );
@@ -312,64 +281,13 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
       );
     },
 
-    PieChart: ({ props }) => {
-      const COLORS = [
-        "#3b82f6",
-        "#8b5cf6",
-        "#ec4899",
-        "#f59e0b",
-        "#10b981",
-        "#6366f1",
-      ];
-      const data = props.data ?? [];
-      return (
-        <div style={{ width: "100%", height: 200 }}>
-          <ResponsiveContainer>
-            <RechartsPie>
-              <Pie
-                data={data}
-                dataKey="value"
-                nameKey="label"
-                cx="50%"
-                cy="50%"
-                innerRadius={props.innerRadius ?? 40}
-                outerRadius={80}
-                paddingAngle={2}
-              >
-                {data.map((entry, i) => (
-                  <Cell
-                    key={i}
-                    fill={entry.color ?? COLORS[i % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-            </RechartsPie>
-          </ResponsiveContainer>
-        </div>
-      );
-    },
+    PieChart: ({ props }) => (
+      <DonutPieChart data={props.data ?? []} innerRadius={props.innerRadius} />
+    ),
 
-    BarChart: ({ props }) => {
-      const data = props.data ?? [];
-      return (
-        <div style={{ width: "100%", height: 200 }}>
-          <ResponsiveContainer>
-            <RechartsBar data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke={c.divider} />
-              <XAxis dataKey="label" tick={{ fontSize: 11, fill: c.muted }} />
-              <YAxis tick={{ fontSize: 11, fill: c.muted }} />
-              <Tooltip />
-              <Bar
-                dataKey="value"
-                fill={props.color ?? "#3b82f6"}
-                radius={[4, 4, 0, 0]}
-              />
-            </RechartsBar>
-          </ResponsiveContainer>
-        </div>
-      );
-    },
+    BarChart: ({ props }) => (
+      <RenderersBarChart data={props.data ?? []} color={props.color} />
+    ),
 
     Badge: ({ props }) => {
       const variants: Record<string, { bg: string; color: string }> = {
@@ -431,8 +349,11 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
               </tr>
             </thead>
             <tbody>
-              {rows.map((row: Record<string, unknown>, i: number) => (
-                <tr key={i} style={{ borderBottom: `1px solid ${c.divider}` }}>
+              {rows.map((row: Record<string, unknown>) => (
+                <tr
+                  key={JSON.stringify(row)}
+                  style={{ borderBottom: `1px solid ${c.divider}` }}
+                >
                   {cols.map((col) => (
                     <td
                       key={col.key}
@@ -450,9 +371,9 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
     },
 
     Button: ({ props, children }) => {
-      // `action` is declared in Zod as the declarative { event } config so
-      // GenericBinder recognizes it as ACTION and resolves it to a callable
-      // before the renderer sees it — see the LayoutChild* comment above.
+      // `action` 在 Zod 中宣告為宣告式的 { event } 設定，讓 GenericBinder
+      // 能辨識為 ACTION，並在 renderer 拿到之前先解析成 callable——
+      // 詳見上方 LayoutChild* 的註解。
       const action = props.action as unknown as (() => void) | null;
       return (
         <ActionButton label="Click" doneLabel="Done" action={action}>
@@ -462,9 +383,9 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
     },
 
     FlightCard: ({ props: rawProps }) => {
-      // Every DynString field resolves to a plain string at runtime, and
-      // `action` resolves to a callable — see the LayoutChild* comment above
-      // for why the static Zod type doesn't (and can't) reflect this.
+      // 每個 DynString 欄位在 runtime 都會解析成單純的字串，`action` 則會
+      // 解析成 callable——關於為何靜態 Zod 型別無法（也不可能）反映這點，
+      // 詳見上方 LayoutChild* 的註解。
       const props = rawProps as unknown as Record<string, string | undefined> & {
         action?: (() => void) | null;
       };
@@ -477,23 +398,8 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
         props.statusColor ?? statusColors[props.status ?? ""] ?? "#22c55e";
 
       return (
-        <div
-          style={{
-            border: `1px solid ${c.border}`,
-            borderRadius: "16px",
-            padding: "20px",
-            background: c.card,
-            color: c.cardFg,
-            minWidth: 260,
-            maxWidth: 340,
-            flex: "1 1 260px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "12px",
-            boxShadow: c.shadow,
-          }}
-        >
-          {/* Header: airline + price */}
+        <div className={styles.flightCard}>
+          {/* 頁首：航空公司 + 價格 */}
           <div
             style={{
               display: "flex",
@@ -503,10 +409,10 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
           >
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               {/* eslint-disable-next-line @next/next/no-img-element --
-                  airlineLogo is an agent-generated URL on an arbitrary domain
-                  (Google's favicon API for whatever airline it picks); next/image
-                  needs domains allowlisted ahead of time via remotePatterns, which
-                  isn't possible for a domain chosen at request time. */}
+                  airlineLogo 是 agent 生成、指向任意網域的 URL（依挑選的航空
+                  公司決定，使用 Google 的 favicon API）；next/image 需要事先
+                  透過 remotePatterns 將網域加入允許清單，但這個網域是在請求時
+                  才決定的，無法事先設定。 */}
               <img
                 src={props.airlineLogo}
                 alt={props.airline}
@@ -526,7 +432,7 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
             </span>
           </div>
 
-          {/* Meta */}
+          {/* 附加資訊 */}
           <div
             style={{
               display: "flex",
@@ -547,7 +453,7 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
             }}
           />
 
-          {/* Times */}
+          {/* 時間 */}
           <div
             style={{
               display: "flex",
@@ -566,7 +472,7 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
             </span>
           </div>
 
-          {/* Route */}
+          {/* 航線 */}
           <div
             style={{
               display: "flex",
@@ -597,7 +503,7 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
               }}
             />
 
-            {/* Status */}
+            {/* 狀態 */}
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <span
                 style={{
@@ -624,7 +530,7 @@ const demonstrationCatalogRenderers: CatalogRenderers<DemonstrationCatalogDefini
     },
   };
 
-// ─── Assembled Catalog ───────────────────────────────────────────────
+// ─── 組裝完成的 Catalog ───────────────────────────────────────────────
 
 export const demonstrationCatalog = createCatalog(
   demonstrationCatalogDefinitions,
