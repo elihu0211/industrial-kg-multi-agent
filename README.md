@@ -46,10 +46,10 @@ cd ../../../..
 **3. 設定 web 前端的環境變數（選用）**
 
 ```bash
-cp .env.example .env
+cp apps/web/.env.example apps/web/.env
 ```
 
-`.env` 只影響 web 前端的可選整合（CopilotKit Threads、自訂 MCP server、agent URL 覆寫等），有合理預設值，跳過此步驟 demo 也能正常跑。詳見 `.env.example` 內註解。
+`.env` 放在 `apps/web/` 底下（Next.js 只會讀自己專案目錄裡的 `.env*`，不會往上找 monorepo 根目錄——放根目錄的話 Next.js 實際上讀不到，這也是 [Turborepo 官方文件](https://turborepo.com/docs/crafting-your-repository/using-environment-variables) 建議不要用共用根目錄 `.env` 的原因）。這份 `.env` 只影響 web 前端的可選整合（CopilotKit Threads、自訂 MCP server、agent URL 覆寫等），有合理預設值，跳過此步驟 demo 也能正常跑。詳見 `apps/web/.env.example` 內註解。
 
 **4. 啟動開發伺服器**
 
@@ -98,7 +98,8 @@ curl localhost:8123/health   # 應回傳 {"status":"ok"}
 │   │   │   └── hooks/
 │   │   ├── public/
 │   │   ├── next.config.ts
-│   │   └── package.json
+│   │   ├── package.json
+│   │   └── .env.example         # web 專屬環境變數（AGENT_URL、Threads、MCP 等）
 │   └── agent/                   # .NET Microsoft Agent Framework agent（Clean Architecture）
 │       ├── IndustrialKgAgent.slnx
 │       └── src/                    # 資料夾用短名，.csproj/assembly/namespace 仍是 IndustrialKgAgent.<Layer>
@@ -135,8 +136,7 @@ curl localhost:8123/health   # 應回傳 {"status":"ok"}
 ├── turbo.json
 ├── renovate.json
 ├── AGENTS.md                     # 跨工具 AI agent 共用規則（Git 工作流程等）
-├── CLAUDE.md                     # Claude Code 專用，內容為 @AGENTS.md
-└── .env.example
+└── CLAUDE.md                     # Claude Code 專用，內容為 @AGENTS.md
 ```
 
 ## A2UI — Agent 驅動介面
