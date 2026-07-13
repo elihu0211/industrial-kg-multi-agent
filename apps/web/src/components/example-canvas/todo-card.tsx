@@ -133,7 +133,7 @@ export function TodoCard({
         <Checkbox
           checked={isCompleted}
           onCheckedChange={() => onToggleStatus(todo)}
-          className="mt-[2px]"
+          className="mt-0.5"
         />
 
         <div className="flex-1 min-w-0">
@@ -147,7 +147,7 @@ export function TodoCard({
                 if (e.key === "Enter") saveEdit("title");
                 if (e.key === "Escape") cancelEdit();
               }}
-              className="w-full text-base font-semibold focus:outline-none bg-transparent text-(--foreground) border-b-2 border-(--primary) pb-[2px]"
+              className="w-full text-base font-semibold focus:outline-none bg-transparent text-(--foreground) border-b-2 border-(--primary) pb-0.5"
               autoFocus
               aria-label="Edit todo title"
             />
@@ -175,7 +175,7 @@ export function TodoCard({
               onKeyDown={(e) => {
                 if (e.key === "Escape") cancelEdit();
               }}
-              className="w-full mt-1.5 text-sm leading-relaxed focus:outline-none resize-none bg-transparent text-(--muted-foreground) border-b-2 border-(--primary) pb-[2px]"
+              className="w-full mt-1.5 text-sm leading-relaxed focus:outline-none resize-none bg-transparent text-(--muted-foreground) border-b-2 border-(--primary) pb-0.5"
               rows={1}
               autoFocus
               aria-label="Edit todo description"
