@@ -1,0 +1,3 @@
+date,category,subcategory,amount,type,notes
+2026-01-05,Revenue,Enterprise Subscriptions,28000,income,3 new enterprise customers (Acme Corp, TechFlow, DataViz Inc)
+2026-01-10,Expenses,Engineering Salaries,42000,expense,7 engineers + 2 contractors

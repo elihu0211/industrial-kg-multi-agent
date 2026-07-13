@@ -5,4 +5,7 @@
     <Project Path="src/Host/IndustrialKgAgent.Host.csproj" />
     <Project Path="src/Infrastructure/IndustrialKgAgent.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/IndustrialKgAgent.Tests/IndustrialKgAgent.Tests.csproj" />
+  </Folder>
 </Solution>
