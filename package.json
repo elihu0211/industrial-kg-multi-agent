@@ -11,6 +11,7 @@
     "dev:debug": "LOG_LEVEL=debug pnpm dev",
     "dev:web": "turbo run dev --filter=@ikg/web",
     "dev:agent": "dotnet watch run --project apps/agent/src/Host",
+    "lint": "pnpm --filter @ikg/web lint",
     "build": "turbo run build",
     "start": "turbo run start --filter=@ikg/web"
   },
