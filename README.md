@@ -79,17 +79,28 @@ curl localhost:8123/health   # 應回傳 {"status":"ok"}
 
 ## 可用指令
 
+### Web（Next.js，`apps/web`）
+
 從 repo root 執行：
 
 | 指令 | 說明 |
 |------|------|
+| `pnpm install` | 安裝 web workspace 依賴 |
 | `pnpm dev` | 同時啟動 web 與 agent |
 | `pnpm dev:debug` | 啟動開發伺服器並開啟 debug 日誌 |
 | `pnpm dev:web` | 僅啟動 Next.js 前端（Turborepo） |
-| `pnpm dev:agent` | 僅啟動 .NET agent（`dotnet watch run`，含 hot reload） |
 | `pnpm lint` | 對 web 前端跑 ESLint |
-| `pnpm build` | 建置前端供正式環境使用（Turborepo） |
+| `pnpm build` | 建置前端供正式環境使用（Turborepo，底層是 `next build`） |
 | `pnpm start` | 啟動正式環境 web server |
+
+### Agent（.NET，`apps/agent`）
+
+| 指令 | 說明 |
+|------|------|
+| `cd apps/agent && dotnet restore IndustrialKgAgent.slnx` | 還原 NuGet 套件。`dotnet run`/`dotnet watch run` 會在第一次啟動時自動觸發，通常不需手動執行 |
+| `cd apps/agent && dotnet build` | 建置整個 solution。IDE 剛 clone 完或出現「找不到類型或命名空間名稱」紅色波浪線時，跑一次即可生成 `obj/*.GlobalUsings.g.cs`，讓 IntelliSense 解析到 `ImplicitUsings` 提供的隱式 global using（`List<>`、`Task<>` 等） |
+| `cd apps/agent/src/Host && dotnet run` | 單次啟動 agent（port 8123，不含 hot reload） |
+| `pnpm dev:agent`（root） | 啟動 agent，等同上一行但用 `dotnet watch run`，含 hot reload |
 
 ## 目錄結構
 
@@ -209,11 +220,9 @@ curl localhost:8123/health   # 應回傳 {"status":"ok"}
 2. 確認 `OPENAI_API_KEY`、`LLM_MODEL`、`A2UI_MODEL` 已透過 `dotnet user-secrets`（或 `appsettings.json`）正確設定——`cd apps/agent/src/Host && dotnet user-secrets list` 可檢查目前值；缺任一個 agent 啟動時就會直接拋例外並印出缺哪個變數
 3. 確認兩個 server 均已成功啟動
 
-### .NET 依賴問題
+### .NET 依賴問題／IDE 型別解析錯誤
 
-```bash
-dotnet restore apps/agent/IndustrialKgAgent.slnx
-```
+見上方〈可用指令〉的 `dotnet restore` / `dotnet build`。
 
 ## 授權
 
