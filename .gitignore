@@ -21,3 +21,6 @@ apps/agent/src/IndustrialKgAgent.Host/appsettings.Development.json
 
 # ── Env ──
 .env
+
+# ── Serena (local cache) ──
+.serena/
